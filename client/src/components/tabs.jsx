@@ -3,47 +3,7 @@ import { styled } from '@mui/material/styles';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
-
-const AntTabs = styled(Tabs)({
-  borderBottom: '1px solid #e8e8e8',
-  '& .MuiTabs-indicator': {
-    backgroundColor: '#1890ff',
-  },
-});
-
-const AntTab = styled((props) => <Tab disableRipple {...props} />)(({ theme }) => ({
-  textTransform: 'none',
-  minWidth: 0,
-  [theme.breakpoints.up('sm')]: {
-    minWidth: 0,
-  },
-  fontWeight: theme.typography.fontWeightRegular,
-  marginRight: theme.spacing(1),
-  color: 'rgba(0, 0, 0, 0.85)',
-  fontFamily: [
-    '-apple-system',
-    'BlinkMacSystemFont',
-    '"Segoe UI"',
-    'Roboto',
-    '"Helvetica Neue"',
-    'Arial',
-    'sans-serif',
-    '"Apple Color Emoji"',
-    '"Segoe UI Emoji"',
-    '"Segoe UI Symbol"',
-  ].join(','),
-  '&:hover': {
-    color: '#40a9ff',
-    opacity: 1,
-  },
-  '&.Mui-selected': {
-    color: '#1890ff',
-    fontWeight: theme.typography.fontWeightMedium,
-  },
-  '&.Mui-focusVisible': {
-    backgroundColor: '#d1eaff',
-  },
-}));
+import { useTheme } from '@mui/material/styles'; // Import useTheme
 
 const StyledTabs = styled((props) => (
   <Tabs
@@ -69,9 +29,9 @@ const StyledTab = styled((props) => <Tab disableRipple {...props} />)(
     fontWeight: theme.typography.fontWeightRegular,
     fontSize: theme.typography.pxToRem(15),
     marginRight: theme.spacing(1),
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: theme.palette.mode === 'dark' ? '#fff' : '#000', // Dynamic color based on theme mode for unselected tabs
     '&.Mui-selected': {
-      color: '#fff',
+      color: '#1890ff', // Constant color for selected tab (blue for example)
     },
     '&.Mui-focusVisible': {
       backgroundColor: 'rgba(100, 95, 228, 0.32)',
@@ -79,24 +39,23 @@ const StyledTab = styled((props) => <Tab disableRipple {...props} />)(
   }),
 );
 
-const CustomizedTabs= ({ tabs, activeTab, setActiveTab }) => {
-    const handleChange = (event, newValue) => {
-      setActiveTab(newValue);
-    };
+const CustomizedTabs = ({ tabs, activeTab, setActiveTab }) => {
+  const theme = useTheme(); // Get the current theme
+
+  const handleChange = (event, newValue) => {
+    setActiveTab(newValue);
+  };
 
   return (
     <Box sx={{ width: '100%' }}>
-
       <Box sx={{ bgcolor: 'transparent' }}>
         <StyledTabs
           value={activeTab}
           onChange={handleChange}
         >
-
-        {tabs.map((tab) => (
-        <StyledTab label={tab} value={tab} key={tab} />
-      ))}
-
+          {tabs.map((tab) => (
+            <StyledTab label={tab} value={tab} key={tab} />
+          ))}
         </StyledTabs>
         <Box sx={{ p: 3 }} />
       </Box>
@@ -105,4 +64,3 @@ const CustomizedTabs= ({ tabs, activeTab, setActiveTab }) => {
 };
 
 export default CustomizedTabs;
-
