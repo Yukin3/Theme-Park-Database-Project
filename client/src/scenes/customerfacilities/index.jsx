@@ -87,7 +87,7 @@ const CustomerFacilities = () => {
                     }}
                 >
                 <img
-					src="/assets/facilitiesicon.png"
+					src="/assets/facilitiesicon.jpeg"
 					style={{ width: "20%", height: "20%" }}
                     sx={{display: "flex", justifyContent: "center", textAlign: "center",}}   
                         />
@@ -118,7 +118,7 @@ const CustomerFacilities = () => {
                                     
 									<Typography variant="h5" textAlign={"center"} gutterBottom>
 					- {facility.facility_name}
-				</Typography>git
+				</Typography>
                 </Stack>
 							))}
 						</Stack>
