@@ -208,13 +208,10 @@ const CustomerDashboard = () => {
 										mb: 2,
 										px: 4,
 										borderRadius: 1,
-										backgroundColor:
-											theme.palette.primary.main,
-										color: theme.palette.primary
-											.contrastText,
+										backgroundColor: "#2344A1",
+										color: "white",
 										"&:hover": {
-											backgroundColor:
-												theme.palette.primary.dark,
+											backgroundColor: "#3A5BC7",
 										},
 									}}
 								>
@@ -285,13 +282,10 @@ const CustomerDashboard = () => {
 											mb: 2,
 											px: 4,
 											borderRadius: 1,
-											backgroundColor:
-												theme.palette.primary.main,
-											color: theme.palette.primary
-												.contrastText,
+											backgroundColor: "#2344A1",
+											color: "white",
 											"&:hover": {
-												backgroundColor:
-													theme.palette.primary.dark,
+												backgroundColor: "#3A5BC7",
 											},
 										}}
 									>
