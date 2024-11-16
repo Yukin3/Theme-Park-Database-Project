@@ -162,17 +162,20 @@ const CustomerEvents = () => {
 									},
 									"& .fc-event": {
 										cursor: "pointer",
-										backgroundColor:
-											theme.palette.primary.main,
-										borderColor: theme.palette.primary.main,
-										color: theme.palette.primary
-											.contrastText,
+										backgroundColor: "#2344A1",
+										color: "white",
 										"&:hover": {
+											backgroundColor: "#3A5BC7",
 											opacity: 0.9,
 										},
 									},
 									"& .fc-day-today": {
 										backgroundColor: `${theme.palette.primary.light}33`,
+									},
+									"& .fc-col-header-cell": {
+										backgroundColor:
+											theme.palette.neutral.light,
+										color: theme.palette.text.primary,
 									},
 								}}
 							>
@@ -204,7 +207,7 @@ const CustomerEvents = () => {
 									width: { xs: "100%", md: "400px" },
 									p: 0,
 									backgroundColor:
-										theme.palette.neutral.light,
+										theme.palette.background.paper,
 									color: theme.palette.text.primary,
 									maxHeight: { md: "800px" },
 									overflow: "hidden",
@@ -219,14 +222,14 @@ const CustomerEvents = () => {
 										borderBottom: 1,
 										borderColor: theme.palette.divider,
 										backgroundColor:
-											theme.palette.neutral.main,
+											theme.palette.background.paper,
 									}}
 								>
 									<Typography
 										variant="h3"
 										gutterBottom={false}
 										sx={{
-											color: theme.palette.text.secondary,
+											color: theme.palette.text.primary,
 										}}
 									>
 										Upcoming Shows
@@ -287,10 +290,7 @@ const CustomerEvents = () => {
 																	"sticky",
 																top: 0,
 																bgcolor:
-																	theme
-																		.palette
-																		.neutral
-																		.main,
+																	"#2344A1",
 																pt:
 																	index === 0
 																		? 0
@@ -300,17 +300,6 @@ const CustomerEvents = () => {
 																flexDirection:
 																	"column",
 																width: "100%",
-																"&::after": {
-																	content:
-																		'""',
-																	position:
-																		"absolute",
-																	left: 0,
-																	right: 0,
-																	bottom: 0,
-																	height: "4px",
-																	background: `linear-gradient(to bottom, ${theme.palette.neutral.main} 0%, transparent 100%)`,
-																},
 															}}
 														>
 															<Typography
@@ -321,7 +310,8 @@ const CustomerEvents = () => {
 																	fontWeight: 500,
 																	color: theme
 																		.palette
-																		.text,
+																		.common
+																		.white,
 																	mb: 1,
 																	pl: 3,
 																}}
