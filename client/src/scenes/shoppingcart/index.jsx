@@ -52,6 +52,13 @@ const ShoppingCart = () => {
 							variant="contained"
 							color="primary"
 							onClick={() => navigate("/checkout")}
+							sx={{
+								backgroundColor: "#2344A1",
+								color: "white",
+								"&:hover": {
+									backgroundColor: "#3A5BC7",
+								},
+							}}
 						>
 							Proceed to Checkout
 						</Button>
@@ -74,7 +81,14 @@ const ShoppingCart = () => {
 						variant="contained"
 						color="primary"
 						onClick={() => navigate("/purchase-tickets")}
-						sx={{ mt: 2 }}
+						sx={{
+							mt: 2,
+							backgroundColor: "#2344A1",
+							color: "white",
+							"&:hover": {
+								backgroundColor: "#3A5BC7",
+							},
+						}}
 					>
 						Buy Tickets
 					</Button>

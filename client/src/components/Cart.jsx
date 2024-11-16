@@ -5,7 +5,7 @@ import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import { useCart } from "./context/CartContext";
 import { useNavigate } from "react-router-dom";
 
-const Cart = () => {
+const Cart = ({ buttonStyle }) => {
 	const navigate = useNavigate();
 	const { cartItems } = useCart();
 
@@ -15,7 +15,16 @@ const Cart = () => {
 	);
 
 	return (
-		<IconButton onClick={() => navigate("/shopping-cart")}>
+		<IconButton
+			onClick={() => navigate("/shopping-cart")}
+			sx={{
+				...buttonStyle,
+				"&:hover": {
+					backgroundColor: "transparent",
+					opacity: 1,
+				},
+			}}
+		>
 			<Badge badgeContent={cartItemCount} color="error">
 				<ShoppingCartOutlinedIcon />
 			</Badge>

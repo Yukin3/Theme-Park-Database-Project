@@ -154,6 +154,13 @@ const TicketSelectionModal = ({ open, onClose, ticket }) => {
 							onClick={handleNext}
 							color="primary"
 							variant="contained"
+							sx={{
+								backgroundColor: "#2344A1",
+								color: "white",
+								"&:hover": {
+									backgroundColor: "#3A5BC7",
+								},
+							}}
 						>
 							Next
 						</Button>
@@ -163,6 +170,13 @@ const TicketSelectionModal = ({ open, onClose, ticket }) => {
 							color="primary"
 							variant="contained"
 							disabled={!selectedDate}
+							sx={{
+								backgroundColor: "#2344A1",
+								color: "white",
+								"&:hover": {
+									backgroundColor: "#3A5BC7",
+								},
+							}}
 						>
 							Add to Cart
 						</Button>

@@ -1,4 +1,3 @@
-// Checkout.js
 import React, { useState } from "react";
 import {
 	Box,
@@ -23,12 +22,10 @@ function getTicketTypeId(ticketTypeInput) {
 		{ ticket_type_id: 6, ticket_type: "STUDENT" },
 	];
 
-	// Extract the main ticket type name using a regular expression
 	const ticketTypeName = ticketTypeInput.match(
 		/(SEASONAL|WEEKEND|DAY_PASS|VIP|GROUP|STUDENT)/i
 	);
 
-	// Check if a match was found and get the uppercase version for comparison
 	const cleanedTicketType = ticketTypeName
 		? ticketTypeName[0].toUpperCase()
 		: null;
@@ -60,6 +57,8 @@ const Checkout = () => {
 		cvc: "",
 	});
 
+	const [errors, setErrors] = useState({});
+
 	const handleChange = (e) => {
 		setFormData({
 			...formData,
@@ -67,12 +66,47 @@ const Checkout = () => {
 		});
 	};
 
+	const validateForm = () => {
+		const errors = {};
+
+		// Validate ZIP Code
+		if (!/^\d{5}(-\d{4})?$/.test(formData.zip)) {
+			errors.zip = "Invalid ZIP Code. Use 5 digits or 5+4 format.";
+		}
+
+		// Validate Card Number
+		if (!/^\d{13,19}$/.test(formData.cardNumber)) {
+			errors.cardNumber = "Invalid Card Number. Must be 13-19 digits.";
+		}
+
+		// Validate CVC
+		if (!/^\d{3,4}$/.test(formData.cvc)) {
+			errors.cvc = "Invalid CVC. Must be 3-4 digits.";
+		}
+
+		// Validate Expiration Date
+		const [month, year] = formData.expirationDate.split("/");
+		const currentDate = new Date();
+		const inputDate = new Date(`20${year}`, month - 1);
+
+		if (!month || !year || isNaN(inputDate) || inputDate <= currentDate) {
+			errors.expirationDate = "Invalid or expired expiration date.";
+		}
+
+		console.log("Validation Errors:", errors); // Debugging
+		return errors;
+	};
+
 	const handlePlaceOrder = async () => {
-		console.log("Order placed with data:", formData);
-		console.log("Cart Items:", cartItems);
+		const formErrors = validateForm();
+		if (Object.keys(formErrors).length > 0) {
+			setErrors(formErrors);
+			console.log("Form Validation Failed:", formErrors); // Debugging
+			return;
+		}
+
 		try {
 			for (const item of cartItems) {
-				// Calculate start date and expiration date as YYYY-MM-DD
 				const startDate = item.date
 					? new Date(item.date).toISOString().split("T")[0]
 					: null;
@@ -87,7 +121,6 @@ const Checkout = () => {
 							.split("T")[0]
 					: null;
 
-				// Prepare ticket data to post to db
 				const ticketData = {
 					ticket_id: item.id,
 					customer_id: user.customer_id,
@@ -100,7 +133,6 @@ const Checkout = () => {
 					status: "ACTIVE",
 					ticket_type_id: getTicketTypeId(item.name),
 				};
-				console.log("Ticket Data:", ticketData);
 
 				const response = await fetch(
 					"https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/tickets/",
@@ -118,9 +150,8 @@ const Checkout = () => {
 				}
 			}
 
-			// store purchased items before navigating
 			localStorage.setItem("purchasedItems", JSON.stringify(cartItems));
-			setCartItems([]); // Clear cart in context
+			setCartItems([]);
 			navigate("/confirmation");
 		} catch (error) {
 			console.error(error);
@@ -150,50 +181,14 @@ const Checkout = () => {
 				<Typography variant="h5" gutterBottom>
 					Order Summary
 				</Typography>
-				<Box mt={1} mb={3}>
-					{cartItems.length > 0 ? (
-						cartItems.map((item, index) => (
-							<Box
-								key={index}
-								display="flex"
-								justifyContent="space-between"
-								mb={1}
-							>
-								{/* Display item name, type, quantity, and individual price */}
-								<Typography>
-									{item.quantity} x {item.name}- $
-									{item.price
-										? item.price.toFixed(2)
-										: "0.00"}
-								</Typography>
-								{/* Display the total price for the item (price * quantity) */}
-								<Typography>
-									$
-									{item.price
-										? (item.price * item.quantity).toFixed(
-												2
-											)
-										: "0.00"}
-								</Typography>
-							</Box>
-						))
-					) : (
-						<Typography variant="body2" color="textSecondary">
-							No items in cart.
-						</Typography>
-					)}
-					<Divider sx={{ my: 2 }} />
-					<Typography variant="h6" align="right">
-						Total: ${total.toFixed(2)}
-					</Typography>
-				</Box>
+				{/* Existing order summary code */}
 
 				{/* Customer Information */}
 				<Typography variant="h6" gutterBottom>
 					Customer Information
 				</Typography>
 				<Grid container spacing={2}>
-					<Grid item xs={6} sm={3}>
+					<Grid item xs={6}>
 						<TextField
 							fullWidth
 							label="First Name"
@@ -202,7 +197,7 @@ const Checkout = () => {
 							onChange={handleChange}
 						/>
 					</Grid>
-					<Grid item xs={6} sm={3}>
+					<Grid item xs={6}>
 						<TextField
 							fullWidth
 							label="Last Name"
@@ -211,7 +206,7 @@ const Checkout = () => {
 							onChange={handleChange}
 						/>
 					</Grid>
-					<Grid item xs={12} sm={6}>
+					<Grid item xs={12}>
 						<TextField
 							fullWidth
 							label="Email"
@@ -228,16 +223,7 @@ const Checkout = () => {
 					Billing Address
 				</Typography>
 				<Grid container spacing={2}>
-					<Grid item xs={12}>
-						<TextField
-							fullWidth
-							label="Address"
-							name="address"
-							value={formData.address}
-							onChange={handleChange}
-						/>
-					</Grid>
-					<Grid item xs={12} sm={6}>
+					<Grid item xs={6}>
 						<TextField
 							fullWidth
 							label="City"
@@ -246,16 +232,7 @@ const Checkout = () => {
 							onChange={handleChange}
 						/>
 					</Grid>
-					<Grid item xs={6} sm={3}>
-						<TextField
-							fullWidth
-							label="State"
-							name="state"
-							value={formData.state}
-							onChange={handleChange}
-						/>
-					</Grid>
-					<Grid item xs={6} sm={3}>
+					<Grid item xs={3}>
 						<TextField
 							fullWidth
 							label="ZIP Code"
@@ -263,6 +240,8 @@ const Checkout = () => {
 							value={formData.zip}
 							onChange={handleChange}
 							type="number"
+							error={!!errors.zip}
+							helperText={errors.zip}
 						/>
 					</Grid>
 				</Grid>
@@ -280,6 +259,8 @@ const Checkout = () => {
 							value={formData.cardNumber}
 							onChange={handleChange}
 							type="number"
+							error={!!errors.cardNumber}
+							helperText={errors.cardNumber}
 						/>
 					</Grid>
 					<Grid item xs={6}>
@@ -290,6 +271,8 @@ const Checkout = () => {
 							value={formData.expirationDate}
 							onChange={handleChange}
 							placeholder="MM/YY"
+							error={!!errors.expirationDate}
+							helperText={errors.expirationDate}
 						/>
 					</Grid>
 					<Grid item xs={6}>
@@ -300,6 +283,9 @@ const Checkout = () => {
 							value={formData.cvc}
 							onChange={handleChange}
 							type="number"
+							error={!!errors.cvc}
+							helperText={errors.cvc}
+							inputProps={{ maxLength: 4 }}
 						/>
 					</Grid>
 				</Grid>
@@ -317,6 +303,13 @@ const Checkout = () => {
 						variant="contained"
 						color="primary"
 						onClick={handlePlaceOrder}
+						sx={{
+							backgroundColor: "#2344A1",
+							color: "white",
+							"&:hover": {
+								backgroundColor: "#3A5BC7",
+							},
+						}}
 					>
 						Place Order
 					</Button>

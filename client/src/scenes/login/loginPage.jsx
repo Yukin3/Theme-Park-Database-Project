@@ -214,8 +214,12 @@ export default function LoginPage() {
 							<Link
 								to="/signup"
 								sx={{
-									textDecoration: "none",
-									color: "inherit",
+									mt: 2,
+									backgroundColor: "#2344A1",
+									color: "white",
+									"&:hover": {
+										backgroundColor: "#3A5BC7",
+									},
 								}}
 							>
 								Sign up
@@ -234,7 +238,19 @@ export default function LoginPage() {
 						</Typography>
 					</Box>
 
-					<Button type="submit" variant="contained" fullWidth>
+					<Button
+						type="submit"
+						variant="contained"
+						fullWidth
+						sx={{
+							mt: 2,
+							backgroundColor: "#2344A1",
+							color: "white",
+							"&:hover": {
+								backgroundColor: "#3A5BC7",
+							},
+						}}
+					>
 						Login
 					</Button>
 				</form>
