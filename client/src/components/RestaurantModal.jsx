@@ -1,41 +1,3 @@
-// // components/RestaurantModal.js
-// import React from "react";
-// import {
-// 	Dialog,
-// 	DialogContent,
-// 	DialogTitle,
-// 	Typography,
-// 	Box,
-// } from "@mui/material";
-
-// export default function RestaurantModal({ open, onClose, restaurant, image }) {
-// 	return (
-// 		<Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-// 			<DialogTitle>{restaurant.restaurant_name}</DialogTitle>
-// 			<DialogContent>
-// 				<Box
-// 					component="img"
-// 					src={image}
-// 					alt={restaurant.restaurant_name}
-// 					sx={{
-// 						width: "60%",
-// 						borderRadius: 2,
-// 						mb: 2,
-// 						maxWidth: 300,
-// 					}}
-// 				/>
-// 				<Typography variant="body1" gutterBottom>
-// 					{restaurant.full_description ||
-// 						"No additional details available."}
-// 				</Typography>
-// 				<Typography variant="body2" color="text.secondary">
-// 					Rating: {restaurant.rating || "N/A"}
-// 				</Typography>
-// 			</DialogContent>
-// 		</Dialog>
-// 	);
-// }
-
 import React from "react";
 import {
 	Dialog,
@@ -83,7 +45,18 @@ export default function RestaurantModal({ open, onClose, restaurant, image }) {
 				</Box>
 			</DialogContent>
 			<DialogActions>
-				<Button onClick={onClose} variant="contained" color="primary">
+				<Button
+					onClick={onClose}
+					variant="contained"
+					sx={{
+						mt: 2,
+						backgroundColor: "#2344A1",
+						color: "white",
+						"&:hover": {
+							backgroundColor: "#3A5BC7",
+						},
+					}}
+				>
 					Close
 				</Button>
 			</DialogActions>

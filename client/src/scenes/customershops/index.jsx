@@ -14,6 +14,7 @@ import { useState, useEffect } from "react";
 import ShopCard from "../../components/ShopCard";
 import ShopModal from "../../components/ShopModal";
 import getShopImage from "../../utils/getShopImage";
+import Footer from "../../components/Footer";
 
 const CustomerShops = () => {
 	const [Shops, setShops] = useState([]);
@@ -55,9 +56,7 @@ const CustomerShops = () => {
 	}, []);
 
 	const filteredShops = Shops.filter((shop) =>
-		shop.shop_name
-			.toLowerCase()
-			.includes(searchQuery.toLowerCase())
+		shop.shop_name.toLowerCase().includes(searchQuery.toLowerCase())
 	);
 
 	const handleOpenModal = (shop) => {
@@ -85,7 +84,8 @@ const CustomerShops = () => {
 					Discover Our Shops
 				</Typography>
 				<Typography variant="h6" mb={3}>
-					Explore our wide range of shopping options! Gifts,nicknacks, and more!
+					Explore our wide range of shopping options! Gifts,nicknacks,
+					and more!
 				</Typography>
 				<Container maxWidth="md">
 					<TextField
@@ -132,12 +132,8 @@ const CustomerShops = () => {
 								>
 									<ShopCard
 										shop={shop}
-										image={getShopImage(
-											shop.shop_id
-										)}
-										onClick={() =>
-											handleOpenModal(shop)
-										}
+										image={getShopImage(shop.shop_id)}
+										onClick={() => handleOpenModal(shop)}
 									/>
 								</Grid>
 							))}
@@ -150,13 +146,12 @@ const CustomerShops = () => {
 							open={Boolean(selectedShop)}
 							onClose={handleCloseModal}
 							shop={selectedShop}
-							image={getShopImage(
-								selectedShop.shop_id
-							)}
+							image={getShopImage(selectedShop.shop_id)}
 						/>
 					)}
 				</Box>
 			</Container>
+			<Footer></Footer>
 		</Box>
 	);
 };

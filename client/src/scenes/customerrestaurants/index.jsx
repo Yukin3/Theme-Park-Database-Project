@@ -15,6 +15,7 @@ import { useState, useEffect } from "react";
 import RestaurantCard from "../../components/RestaurantCard";
 import RestaurantModal from "../../components/RestaurantModal";
 import getRestaurantImage from "../../utils/getRestaurantImage";
+import Footer from "../../components/Footer";
 
 const CustomerRestaurants = () => {
 	const [restaurants, setRestaurants] = useState([]);
@@ -169,6 +170,7 @@ const CustomerRestaurants = () => {
 					)}
 				</Box>
 			</Container>
+			<Footer></Footer>
 		</Box>
 	);
 };

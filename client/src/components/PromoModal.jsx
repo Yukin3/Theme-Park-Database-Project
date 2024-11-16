@@ -17,7 +17,7 @@ const PromoModal = ({ open, onClose }) => {
 		<Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
 			<DialogTitle>
 				<Box sx={{ textAlign: "center" }}>
-					<Typography variant="h4" color={theme.palette.primary.main}>
+					<Typography variant="h4" color={theme.palette.text.primary}>
 						Special Promotion!
 					</Typography>
 				</Box>
@@ -58,8 +58,10 @@ const PromoModal = ({ open, onClose }) => {
 						color="primary"
 						onClick={onClose}
 						sx={{
+							backgroundColor: "#FFD700", // Secondary color for button
+							color: theme.palette.secondary.contrastText, // Ensure text is readable
 							"&:hover": {
-								backgroundColor: theme.palette.primary.dark,
+								backgroundColor: "#FFEA00",
 							},
 						}}
 					>

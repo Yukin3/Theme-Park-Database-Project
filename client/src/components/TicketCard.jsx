@@ -61,6 +61,14 @@ const TicketCard = ({ ticket }) => {
 					size="small"
 					variant="outlined"
 					onClick={handleFindTickets}
+					sx={{
+						mt: 2,
+						backgroundColor: "#2344A1",
+						color: "white",
+						"&:hover": {
+							backgroundColor: "#3A5BC7",
+						},
+					}}
 				>
 					Find Tickets
 				</Button>
