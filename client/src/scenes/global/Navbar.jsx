@@ -42,9 +42,7 @@ const Item = ({ title, to, icon }) => {
 			>
 				<Box
 					sx={{
-						color: isActive
-							? theme.palette.secondary.main
-							: theme.palette.navbarText.main,
+						color: isActive ? "#FFD700" : "inherit",
 						marginRight: "8px",
 					}}
 				>
