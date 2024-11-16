@@ -14,7 +14,20 @@ export default function RestaurantCard({ restaurant, onClick, image }) {
 					boxShadow: 6,
 				},
 				display: "flex",
-				flexDirection: "row", // Align content and image horizontally
+				flexDirection: {
+					xs: "column", // Stack content vertically on small screens
+					sm: "row", // Align content horizontally on medium and larger screens
+				},
+				width: {
+					xs: "100%", // Full width on small screens
+					sm: "350px", // Fixed width on medium and larger screens
+				},
+				maxWidth: "100%", // Ensure it doesn't exceed container width
+				height: {
+					xs: "auto", // Adjust height automatically on small screens
+					sm: "225px", // Fixed height on medium and larger screens
+				},
+				margin: "16px auto", // Add margin for spacing
 			}}
 		>
 			<CardContent sx={{ flex: 1 }}>
@@ -46,6 +59,14 @@ export default function RestaurantCard({ restaurant, onClick, image }) {
 						onClick={(e) => {
 							e.stopPropagation();
 							onClick();
+						}}
+						sx={{
+							mt: 2,
+							backgroundColor: "#2344A1",
+							color: "white",
+							"&:hover": {
+								backgroundColor: "#3A5BC7",
+							},
 						}}
 					>
 						See more
