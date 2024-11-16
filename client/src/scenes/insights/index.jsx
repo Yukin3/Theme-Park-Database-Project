@@ -13,55 +13,45 @@ import EmployeePayroll from "../employees/payroll";
 import Customers from "../customers";
 import InvoiceReports from "./invoicereports";
 
-const Insights = ({ isOpen }) => {
-	const navigate = useNavigate();
 
-	const [activeTab, setActiveTab] = useState("Customer Reports");
-	const tabs = [
-		"Customer Reports",
-		"Rides Reports",
-		"Maintenance Reports",
-		"Order Reports",
-		"Timelog Reports",
-	]; // Page table tabs
-	// Function to render the correct table component
-	const renderTable = () => {
-		switch (activeTab) {
-			case "Customer Reports":
-				return <Customers />;
-			case "Rides Reports":
-				return <RidesReports />;
-			case "Maintenance Reports":
-				return <MaintenanceReports />;
-			case "Order Reports":
-				return <InvoiceReports />;
-			case "Timelog Reports":
-				return <EmployeePayroll />;
-			default:
-				return null;
-		}
-	};
 
-	return (
-		<Box
-			m="20px"
-			ml={isOpen ? "250px" : "80px"} // Adjust left margin based on isOpen
-			transition="margin 0.3s ease" // Smooth transition for margin
-		>
-			<Header
-				title="Insights"
-				subtitle="View a list of relevant reports "
-			/>
-			<Box>
-				<CustomizedTabs
-					tabs={tabs}
-					activeTab={activeTab}
-					setActiveTab={setActiveTab}
-				/>
-				{renderTable()}
-			</Box>
-		</Box>
-	);
-};
+const Insights = () => {
 
-export default Insights;
+
+  const navigate = useNavigate();
+
+
+
+    const [activeTab, setActiveTab] = useState('Customer Reports');
+    const tabs = ['Rides Reports', 'Maintenance Reports', 'Order Reports', 'Timelog Reports' ];   // Page table tabs
+    // Function to render the correct table component
+    const renderTable = () => {
+      switch (activeTab) {
+        case 'Customer Reports':
+          return <Customers />
+        case 'Rides Reports':
+          return <RidesReports />
+        case 'Maintenance Reports':
+            return <MaintenanceReports />
+        case 'Order Reports':
+            return <InvoiceReports />
+        case 'Timelog Reports':
+            return <EmployeePayroll />
+        default:
+          return null;
+      }
+    };
+  
+
+      return <Box m="20px"> 
+                  <Header title="Insights" subtitle="View a list of relevant reports " />
+                      <Box >
+                        <CustomizedTabs tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
+                        {renderTable()} 
+                      </Box>  
+      
+              </Box>
+      
+      }
+    
+    export default Insights; 
