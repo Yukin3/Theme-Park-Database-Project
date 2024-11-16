@@ -54,6 +54,15 @@ const TicketsSection = ({ title, tickets, emptyMessage, styleVariant }) => {
 					))}
 				</Grid>
 			)}
+			<Box sx={{ mt: 4, textAlign: "center" }}>
+				<Typography variant="caption" display="block">
+					Terms and Conditions: All sales are final.
+				</Typography>
+				<Typography variant="caption" display="block">
+					No refunds or exchanges. Please read and agree to all terms
+					before purchasing.
+				</Typography>
+			</Box>
 		</Box>
 	);
 };

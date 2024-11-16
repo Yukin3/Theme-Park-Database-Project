@@ -13,6 +13,7 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import EventCard from "../../components/EventCard";
+import Footer from "../../components/Footer";
 
 const formatDateTime = (date, time) => {
 	const eventDate = new Date(date + " " + time);
@@ -363,6 +364,7 @@ const CustomerEvents = () => {
 					)}
 				</Box>
 			</Container>
+			<Footer />
 		</Box>
 	);
 };

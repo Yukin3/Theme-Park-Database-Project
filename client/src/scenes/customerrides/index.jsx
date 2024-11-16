@@ -12,6 +12,7 @@ import { Search } from "lucide-react";
 import { useState, useEffect } from "react";
 import RideCard from "../../components/RideCard";
 import getRideImage from "../../utils/getRideImage";
+import Footer from "../../components/Footer";
 
 // Helper functions remain the same
 const formatRideType = (rideType) => {
@@ -129,6 +130,7 @@ const CustomerRides = () => {
 					)}
 				</Box>
 			</Container>
+			<Footer></Footer>
 		</Box>
 	);
 };

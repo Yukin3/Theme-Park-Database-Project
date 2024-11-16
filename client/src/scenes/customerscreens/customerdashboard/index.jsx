@@ -17,6 +17,7 @@ import RideCard from "../../../components/RideCard";
 import EventCard from "../../../components/EventCard";
 import PromotionBanner from "../../../components/PromotionBanner";
 import getRideImage from "../../../utils/getRideImage";
+import Footer from "../../../components/Footer";
 
 const formatRideType = (rideType) => {
 	return rideType
@@ -297,6 +298,7 @@ const CustomerDashboard = () => {
 					)}
 				</Box>
 			</Container>
+			<Footer></Footer>
 		</Box>
 	);
 };
