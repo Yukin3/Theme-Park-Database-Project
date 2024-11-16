@@ -9,17 +9,20 @@ import {
 	FormControlLabel,
 	Checkbox,
 	Modal,
+	CircularProgress,
 } from "@mui/material";
 import { useUser } from "../../components/context/UserContext";
 
 const ProfilePage = () => {
 	const { user, login } = useUser();
 	const [formData, setFormData] = useState({});
+	const [initialData, setInitialData] = useState({});
 	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [errors, setErrors] = useState({});
+	const [isLoading, setIsLoading] = useState(false);
 
 	useEffect(() => {
-		// Initialize formData with user's data
-		setFormData({
+		const initialFormData = {
 			first_name: user.first_name || "",
 			last_name: user.last_name || "",
 			email: user.email || "",
@@ -35,10 +38,11 @@ const ProfilePage = () => {
 			membership_type: user.membership_type || "Not Available",
 			registration_date: user.registration_date || "",
 			renewal_date: user.renewal_date || "",
-		});
+		};
+		setFormData(initialFormData);
+		setInitialData(initialFormData); // Save initial data for comparison
 	}, [user]);
 
-	// Update form data as user types
 	const handleChange = (e) => {
 		const { name, value, type, checked } = e.target;
 		setFormData((prevData) => ({
@@ -47,10 +51,52 @@ const ProfilePage = () => {
 		}));
 	};
 
-	// Handle Save button to submit updated data
+	const validatePhoneNumber = (phone) => {
+		// Remove non-numeric characters
+		const numericPhone = phone.replace(/\D/g, "");
+		// Validate length (10 digits for US-based numbers)
+		if (numericPhone.length < 10) {
+			return "Phone number must have at least 10 digits.";
+		}
+		return null; // No error
+	};
+
+	const validateForm = () => {
+		const validationErrors = {};
+
+		// Validate phone number
+		if (formData.phone_number) {
+			const phoneError = validatePhoneNumber(formData.phone_number);
+			if (phoneError) {
+				validationErrors.phone_number = phoneError;
+			}
+		}
+
+		// ZIP code validation
+		if (formData.zip_code && !/^\d{5}(-\d{4})?$/.test(formData.zip_code)) {
+			validationErrors.zip_code = "Invalid ZIP Code format.";
+		}
+
+		// Date of birth validation
+		if (formData.date_of_birth) {
+			const dob = new Date(formData.date_of_birth);
+			if (isNaN(dob)) {
+				validationErrors.date_of_birth = "Invalid date of birth.";
+			}
+		}
+
+		return validationErrors;
+	};
+
 	const handleSave = async () => {
+		const validationErrors = validateForm();
+		if (Object.keys(validationErrors).length > 0) {
+			setErrors(validationErrors);
+			return;
+		}
+
+		setIsLoading(true);
 		try {
-			console.log(formData);
 			const response = await fetch(
 				`https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/customers/${user.email}`,
 				{
@@ -67,18 +113,23 @@ const ProfilePage = () => {
 			}
 
 			const updatedUser = await response.json();
-			// Update user context with the updated data
 			login(updatedUser, "customer");
-			setIsModalOpen(true); // Open modal on successful save
+			setInitialData(formData); // Update initial data after saving changes
+			setIsModalOpen(true);
 		} catch (error) {
 			console.error("Error updating profile:", error);
 			alert("Failed to update profile. Please try again.");
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
 	const handleCloseModal = () => {
 		setIsModalOpen(false);
 	};
+
+	// Compare formData with initialData to check if changes were made
+	const isChanged = JSON.stringify(formData) !== JSON.stringify(initialData);
 
 	return (
 		<Box p={3} display="flex" justifyContent="center">
@@ -88,7 +139,6 @@ const ProfilePage = () => {
 				</Typography>
 				<Divider sx={{ mb: 3 }} />
 
-				{/* Profile Information */}
 				<Box display="flex" flexDirection="column" gap={2}>
 					<TextField
 						label="First Name"
@@ -117,12 +167,13 @@ const ProfilePage = () => {
 						value={formData.phone_number}
 						onChange={handleChange}
 						fullWidth
+						error={!!errors.phone_number}
+						helperText={errors.phone_number}
 					/>
 					<FormControlLabel
 						control={
 							<Checkbox
 								checked={formData.rewards_member}
-								onChange={handleChange}
 								name="rewards_member"
 								disabled
 							/>
@@ -163,6 +214,8 @@ const ProfilePage = () => {
 						value={formData.zip_code}
 						onChange={handleChange}
 						fullWidth
+						error={!!errors.zip_code}
+						helperText={errors.zip_code}
 					/>
 					<TextField
 						label="Country"
@@ -178,6 +231,8 @@ const ProfilePage = () => {
 						value={formData.date_of_birth}
 						onChange={handleChange}
 						fullWidth
+						error={!!errors.date_of_birth}
+						helperText={errors.date_of_birth}
 						InputLabelProps={{ shrink: true }}
 					/>
 					<TextField
@@ -207,17 +262,27 @@ const ProfilePage = () => {
 					/>
 				</Box>
 
-				{/* Save Button */}
 				<Button
 					variant="contained"
 					color="primary"
-					sx={{ mt: 3 }}
 					onClick={handleSave}
+					disabled={!isChanged || isLoading} // Disable button if no changes or loading
+					sx={{
+						mt: 3,
+						backgroundColor: isChanged ? "#2344A1" : "gray", // Change button color if disabled
+						color: "white",
+						"&:hover": {
+							backgroundColor: isChanged ? "#3A5BC7" : "gray",
+						},
+					}}
 				>
-					Save Changes
+					{isLoading ? (
+						<CircularProgress size={24} color="inherit" />
+					) : (
+						"Save Changes"
+					)}
 				</Button>
 
-				{/* Success Modal */}
 				<Modal
 					open={isModalOpen}
 					onClose={handleCloseModal}
@@ -252,7 +317,14 @@ const ProfilePage = () => {
 							variant="contained"
 							color="primary"
 							onClick={handleCloseModal}
-							sx={{ mt: 3 }}
+							sx={{
+								mt: 3,
+								backgroundColor: "#2344A1",
+								color: "white",
+								"&:hover": {
+									backgroundColor: "#3A5BC7",
+								},
+							}}
 						>
 							Close
 						</Button>

@@ -279,7 +279,19 @@ export default function SignUpPage() {
 							<Link to="/custlogin"> Login Here</Link>
 						</Typography>
 					</Box>
-					<Button type="submit" variant="contained" fullWidth>
+					<Button
+						type="submit"
+						variant="contained"
+						fullWidth
+						sx={{
+							mt: 2,
+							backgroundColor: "#2344A1",
+							color: "white",
+							"&:hover": {
+								backgroundColor: "#3A5BC7",
+							},
+						}}
+					>
 						Sign Up
 					</Button>
 				</form>
