@@ -150,11 +150,12 @@ const Navbar = () => {
 						title="Services"
 						menuItems={[
 							{ label: "Dining", path: "/restaurants" },
-							{
-								label: "Facilities",
-								path: "/customerfacilities",
-							},
-							{ label: "Shopping", path: "/customershops" },
+							// These routes were supposed to be done by olivia
+							// {
+							// 	label: "Facilities",
+							// 	path: "/customerfacilities",
+							// },
+							// { label: "Shopping", path: "/customershops" },
 						]}
 						icon={<StoreOutlinedIcon />}
 					/>
