@@ -33,14 +33,19 @@ async def get_frequent_ride_counts(session: AsyncSession = Depends(get_session))
     # Convert each row to a dictionary
     return [{"month": row.month, "name": row.name, "num_rides": row.num_rides} for row in rows]
 
-@reports_router.get("/ride-counts", response_model=List[RideCount])
-async def get_ride_counts(session: AsyncSession = Depends(get_session)):
+@reports_router.get("/ride-counts/{start_date}/{end_date}", response_model=List[RideCount])
+async def get_ride_counts(start_date: str, end_date: str, session: AsyncSession = Depends(get_session)):
     """
-    Retrieve aggregated ride usage counts, grouped by year, month, week, and day.
+    Retrieve aggregated ride usage counts, grouped by ride name and type.
 
-    This endpoint returns a list of dictionaries containing ride usage statistics for each ride,
-    organized by the ride's name, type, and various time dimensions (year, month, week, day).
-    Aggregated counts are provided to capture the number of distinct usage occurrences at each time level.
+    This endpoint returns ride usage statistics for the specified date range, grouped by the ride's
+    name and type. Counts are further organized by time dimensions such as year, month, week, and day.
+
+    Args:
+        - `start_date` (str): The start of the date range for filtering usage data (in "YYYY-MM-DD" format).
+        - `end_date` (str): The end of the date range for filtering usage data (in "YYYY-MM-DD" format).
+        - `session` (AsyncSession): The asynchronous database session dependency injected into the function.
+
     
     Args:
         session (AsyncSession): The asynchronous database session dependency injected into the function.
@@ -50,63 +55,39 @@ async def get_ride_counts(session: AsyncSession = Depends(get_session)):
         Each dictionary includes:
             - ride_name (str): The name of the ride.
             - ride_type (str): The type of the ride (e.g., roller coaster, carousel).
-            - year (int): The year of the usage event.
-            - yearly_count (int): The count of unique years in which the ride was used.
-            - month (str): The name of the month of the usage event.
-            - monthly_count (int): The count of unique year-month combinations for monthly usage.
-            - week (int): The week number within the year.
-            - weekly_count (int): The count of unique year-week combinations for weekly usage.
-            - day (int): The day of the usage event.
-            - daily_count (int): The count of unique usage dates.
+            - ride_count (int): The count of rides for that given period
     """
     query = text('''
     SELECT 
         r.name AS ride_name,
         rt.ride_type,
-        YEAR(ru.usage_date) as year,
-        COUNT(DISTINCT YEAR(ru.usage_date)) AS yearly_count,
-        MONTHNAME(ru.usage_date) as month,
-        COUNT(DISTINCT CONCAT(YEAR(ru.usage_date), '-', MONTH(ru.usage_date))) AS monthly_count,
-        WEEK(ru.usage_date) as week,
-        COUNT(DISTINCT CONCAT(YEAR(ru.usage_date), '-', WEEK(ru.usage_date))) AS weekly_count,
-        DAY(ru.usage_date) as day,
-        COUNT(DISTINCT ru.usage_date) AS daily_count
+        COUNT(*) as ride_count
     FROM `theme-park-db`.rides AS r
     LEFT JOIN `theme-park-db`.ride_usage AS ru
-    ON r.ride_id = ru.ride_id
+        ON r.ride_id = ru.ride_id
     LEFT JOIN `theme-park-db`.ride_type AS rt
-    ON rt.ride_type_id = r.ride_type
+        ON rt.ride_type_id = r.ride_type
+    WHERE ru.usage_date BETWEEN :start_date AND :end_date
     GROUP BY 
         r.name, 
-        r.ride_type,
-        YEAR(ru.usage_date),
-        MONTHNAME(ru.usage_date),
-        WEEK(ru.usage_date),
-        DAY(ru.usage_date)
+        r.ride_type
     ORDER BY 
         r.name, 
         r.ride_type;
     ''')
-    result = await session.execute(query)
+    result = await session.execute(query, {"start_date": start_date, "end_date": end_date})
     rows = result.fetchall()
     # Convert each row to a dictionary
     return [
         {
             "ride_name": row.ride_name, 
             "ride_type": row.ride_type, 
-            "year": row.year,
-            "yearly_count": row.yearly_count,
-            "month": row.month,
-            "monthly_count": row.monthly_count,
-            "week": row.week,
-            "weekly_count": row.weekly_count,
-            "day": row.day,
-            "daily_count": row.daily_count
+            "ride_count": row.ride_count,
         } for row in rows
         ]
 
-@reports_router.get("/broken-rides", response_model=List[BrokenRide])
-async def get_broken_rides(session: AsyncSession = Depends(get_session)):
+@reports_router.get("/broken-rides/{repair_type}", response_model=List[BrokenRide])
+async def get_broken_rides(repair_type: str, session: AsyncSession = Depends(get_session)):
     """
     Retrieve a report of rides currently closed for maintenance or repair, 
     including the most recent work order details.
@@ -130,6 +111,7 @@ async def get_broken_rides(session: AsyncSession = Depends(get_session)):
     assessing current maintenance or repair activities.
 
     Parameters:
+    - `repair_type`: the type of work order made on the ride
     - `session` (AsyncSession): Database session dependency.
 
     Returns:
@@ -158,9 +140,10 @@ async def get_broken_rides(session: AsyncSession = Depends(get_session)):
         WHERE ride_id = r.ride_id
         ) 
         AND wo.ride_id IS NOT NULL
-        AND r.status in ('CLOSED(M)', 'CLOSED(R)');
+        AND r.status in ('CLOSED(M)', 'CLOSED(R)')
+        AND wo.maintenance_type = :repair_type;
     ''')
-    result = await session.execute(query)
+    result = await session.execute(query, {"repair_type": repair_type})
     rows = result.fetchall()
     # Convert each row to a dictionary
     return [
@@ -176,8 +159,8 @@ async def get_broken_rides(session: AsyncSession = Depends(get_session)):
         ]
 
 
-@reports_router.get("/invoice-status", response_model=List[InvoiceStatus])
-async def get_invoice_statuses(session: AsyncSession = Depends(get_session)):
+@reports_router.get("/invoice-status/{start_date}/{end_date}", response_model=List[InvoiceStatus])
+async def get_invoice_statuses(start_date: str, end_date: str, session: AsyncSession = Depends(get_session)):
     """
     Retrieve the status of invoices, including vendor information and related 
     supply details.
@@ -196,6 +179,8 @@ async def get_invoice_statuses(session: AsyncSession = Depends(get_session)):
     tracking the status of payments.
 
     Parameters:
+    - `start_date`: the start of the period to return results for
+    - `end_date`: the end of the period to return results for
     - `session` (AsyncSession): Database session dependency.
 
     Returns:
@@ -204,7 +189,7 @@ async def get_invoice_statuses(session: AsyncSession = Depends(get_session)):
     """
 
     query = text('''
-        SELECT inv.invoice_id, vend.company_name, sup.name AS supply, inv.amount_due, inv.payment_status
+        SELECT inv.invoice_id, vend.company_name, sup.name AS supply, inv.amount_due, inv.due_date, inv.payment_status
         FROM `theme-park-db`.invoice AS inv
         LEFT JOIN `theme-park-db`.purchaseorders AS po
         ON inv.po_number = po.order_id
@@ -213,9 +198,11 @@ async def get_invoice_statuses(session: AsyncSession = Depends(get_session)):
         LEFT JOIN `theme-park-db`.orderdetails as po_det
         ON po.order_id = po_det.order_id
         LEFT JOIN `theme-park-db`.supplies as sup
-        ON sup.supply_id = po_det.supply_id;
+        ON sup.supply_id = po_det.supply_id
+        WHERE inv.due_date BETWEEN :start_date AND :end_date;
+        
     ''')
-    result = await session.execute(query)
+    result = await session.execute(query, {"start_date": start_date, "end_date": end_date})
     rows = result.fetchall()
 
     return [
@@ -228,8 +215,8 @@ async def get_invoice_statuses(session: AsyncSession = Depends(get_session)):
         } for row in rows
         ]
 
-@reports_router.get("/hours-worked", response_model=List[HoursWorked])
-async def get_hours_worked(session: AsyncSession = Depends(get_session)):
+@reports_router.get("/hours-worked/{start_date}/{end_date}", response_model=List[HoursWorked])
+async def get_hours_worked(start_date:str, end_date: str, session: AsyncSession = Depends(get_session)):
     """
     Retrieve a report of hours worked by hourly employees factoring in 
     meal breaks, where applicable.
@@ -249,6 +236,8 @@ async def get_hours_worked(session: AsyncSession = Depends(get_session)):
     different departments and assessing labor distribution.
 
     Parameters:
+    -`start_date`: the start of the search period
+    -`end_date`: the end of the search period
     - `session` (AsyncSession): Database session dependency.
 
     Returns:
@@ -280,9 +269,10 @@ async def get_hours_worked(session: AsyncSession = Depends(get_session)):
     LEFT JOIN `theme-park-db`.sections AS s
         ON t.section_id = s.section_id
     LEFT JOIN `theme-park-db`.departments AS d
-        ON s.department_id = d.department_id;
+        ON s.department_id = d.department_id
+    WHERE t.shift_date BETWEEN :start_date AND :end_date;    
     ''')
-    result = await session.execute(query)
+    result = await session.execute(query, {"start_date": start_date, "end_date": end_date})
     rows = result.fetchall()
 
     return [

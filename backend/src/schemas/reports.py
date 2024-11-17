@@ -14,15 +14,7 @@ class FrequentRide(BaseModel):
 class RideCount(BaseModel):
     ride_name: str 
     ride_type: str 
-    year: int | None
-    yearly_count: int | None
-    month: str | None
-    monthly_count: int | None
-    week: int | None
-    weekly_count: int | None
-    day: int | None
-    daily_count: int | None
-
+    ride_count: int | None
 
 class BrokenRide(BaseModel):
     ride_name: str 
