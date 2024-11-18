@@ -1,4 +1,4 @@
-import { Box, useTheme } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, useTheme } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
@@ -17,6 +17,9 @@ const Shops = ({ isOpen }) => {
 	const [loading, setLoading] = useState(true);
 	const [selectedShops, setSelectedShops] = useState([]);
 	const [editingRow, setEditingRow] = useState(null);
+
+	const [openModal, setOpenModal] = useState(false);
+	const [editedData, setEditedData] = useState({});
 
 	useEffect(() => {
 		const fetchShopsData = async () => {
@@ -45,6 +48,47 @@ const Shops = ({ isOpen }) => {
 		setEditingRow(selectedRowData);
 		console.log("Editing Row Data:", selectedRowData); // Log for debugging
 	};
+
+
+	//open modal and handle edits
+	 const handleEditClick = (row) => {
+		setEditingRow(row);
+		setEditedData(row); 
+		setOpenModal(true);
+	  };
+	  const handleFieldChange = (e, field) => {
+		setEditedData((prev) => ({
+		  ...prev,
+		  [field]: e.target.value,
+		}));
+	  };
+
+
+  //Process and save edits, close modal
+  const handleSaveChanges = async () => {
+    if (!editingRow) return;
+
+    const apiUrl = `https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/shop/${editingRow.shop_id}`;
+
+    try {
+      const response = await axios.put(apiUrl, editedData);
+      console.log("Row updated successfully:", response.data);
+      setShopsData((prev) =>
+        prev.map((facility) =>
+          facility.facility_id === response.data.facility_id ? response.data : facility
+        )
+      );
+      setOpenModal(false);
+    } catch (error) {
+      console.error("Error updating data:", error);
+    }
+  };
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setEditedData({});
+  };
+
+
 
 	// Define columns with editable properties
 	const columns = [
@@ -75,6 +119,17 @@ const Shops = ({ isOpen }) => {
 			flex: 1,
 			editable: true,
 		},
+		{
+			field: "actions",
+			headerName: "Actions",
+			renderCell: (params) => (
+			  <EditButton
+				editingRow={params.row}
+				disabled={false}
+				onSuccess={handleSaveChanges}
+			  />
+			),
+		  },
 	];
 
 	return (
@@ -167,6 +222,33 @@ const Shops = ({ isOpen }) => {
 					onRowSelectionModelChange={handleRowSelection}
 				/>
 			</Box>
+
+
+		<Dialog open={openModal} onClose={handleCloseModal}>
+        <DialogTitle>Edit Facility</DialogTitle>
+        <DialogContent>
+          {Object.keys(editedData).map((key) => (
+            key !== "facility_id" && ( // Exclude ID field from the modal
+              <TextField
+                key={key}
+                label={key}
+                value={editedData[key] || ''}
+                onChange={(e) => handleFieldChange(e, key)}
+                fullWidth
+                margin="normal"
+              />
+            )
+          ))}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseModal} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleSaveChanges} color="primary">
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
 		</Box>
 	);
 };
