@@ -12,6 +12,7 @@ import Orders from "../orders";
 import EmployeePayroll from "../employees/payroll";
 import Customers from "../customers";
 import InvoiceReports from "./invoicereports";
+import TimesheetReports from "./shiftreports";
 
 
 
@@ -22,8 +23,8 @@ const Insights = () => {
 
 
 
-    const [activeTab, setActiveTab] = useState('Customer Reports');
-    const tabs = ['Rides Reports', 'Maintenance Reports', 'Order Reports', 'Timelog Reports' ];   // Page table tabs
+    const [activeTab, setActiveTab] = useState('Rides Reports');
+    const tabs = ['Rides Reports', 'Maintenance Reports', 'Invoice Order Reports', 'Timelog Reports' ];   // Page table tabs
     // Function to render the correct table component
     const renderTable = () => {
       switch (activeTab) {
@@ -33,10 +34,10 @@ const Insights = () => {
           return <RidesReports />
         case 'Maintenance Reports':
             return <MaintenanceReports />
-        case 'Order Reports':
+        case 'Invoice Order Reports':
             return <InvoiceReports />
         case 'Timelog Reports':
-            return <EmployeePayroll />
+            return <TimesheetReports />
         default:
           return null;
       }

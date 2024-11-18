@@ -6,6 +6,7 @@ import Header from "../../../components/Header";
 import DownloadButton from "../../../components/DownloadButton";
 import PrintButton from "../../../components/PrintButton";
 import axios from "axios";
+import BasicDatePicker from "../../../components/DateRangePicker";
 
 const RidesReports = () => {
     const theme = useTheme();
@@ -17,26 +18,26 @@ const RidesReports = () => {
     const [rangeOptions, setRangeOptions] = useState([]);
     const [selectedValue, setSelectedValue] = useState(null);
 
+  const [startDate, setStartDate] = useState("2024-01-01");
+  const [endDate, setEndDate] = useState("2024-12-31");
+
     // Columns for DataGrid
     const columns = [
         { field: "rowNumber", headerName: "#", width: 60, sortable: false },
         { field: "ride_name", headerName: "Ride", flex: 1 },
-        { field: "ride_type", headerName: "Category", flex: 1 },
-        { field: "year", headerName: "Year", flex: 1 },
-        { field: "yearly_count", headerName: "Yearly Count", flex: 1 },
-        { field: "month", headerName: "Month", flex: 1 },
-        { field: "monthly_count", headerName: "Monthly Count", flex: 1 },
-        { field: "week", headerName: "Week", flex: 1 },
-        { field: "weekly_count", headerName: "Weekly Count", flex: 1 },
-        { field: "day", headerName: "Day", flex: 1 },
-        { field: "daily_count", headerName: "Daily Count", flex: 1 },
+        { field: "ride_type", headerName: "Category", flex: 1,  cellClassName: "name-column--cell"},
+        { field: "ride_count", headerName: "Ride Count", flex: 1 },
     ];
+
+    
 
     useEffect(() => {
         const fetchRidesData = async () => {
             try {
-                const response = await axios.get("https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/reports/ride-counts");
+                const response = await axios.get(`https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/reports/ride-counts/${startDate}/${endDate}`);
                 setRidesData(response.data);
+                console.log("Fetched dates:", startDate, "to ",  endDate);
+
             } catch (error) {
                 console.error("Error fetching ride data:", error);
             } finally {
@@ -44,7 +45,8 @@ const RidesReports = () => {
             }
         };
         fetchRidesData();
-    }, []);
+    }, [startDate, endDate]);
+    
 
     // Generate options for the range selection (year, month, week, or day)
     useEffect(() => {
@@ -63,68 +65,55 @@ const RidesReports = () => {
     // Add row numbers to each row for display
     const rowsWithNumbers = filteredData.map((row, index) => ({ ...row, rowNumber: index + 1 }));
 
+
+
+
+
+    //
+
+
+
+ // Handle date change from DatePicker
+ const handleDateChange = (field, value) => {
+    if (field === "start_date") {
+      setStartDate(value);
+    } else if (field === "end_date") {
+      setEndDate(value);
+    }
+  };
+
+
+    //
     return (
         <Box m="20px">
             {/* Header with Print, Download, and Add Buttons */}
             <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Header title="Rides Reports" subtitle="View ride statistics by selected range" />
+                <Header title="Rides Reports" subtitle="View ride statistics by selected date range" />
                 <Box display="flex" alignItems="center">
-                    <PrintButton apiUrl="https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/reports/ride-counts" columns={columns} />
+                    <PrintButton apiUrl={`https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/reports/ride-counts/${startDate}/${endDate}`} columns={columns} />
                     <DownloadButton
-                        apiUrl="https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/reports/ride-counts"
+                        apiUrl={`https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/reports/ride-counts/${startDate}/${endDate}`}
                         fileName="ride_counts_report.csv"
                         columns={columns}
                     />
                 </Box>
             </Box>
 
-            {/* Dropdown Filters */}
+            {/* Date range Filters */}
             <Box display="flex" gap="10px" mb="20px">
-                <Select
-                    value={selectedRange}
-                    onChange={(e) => {
-                        setSelectedRange(e.target.value);
-                        setSelectedValue(null); // Reset selected value when range changes
-                    }}
-                    displayEmpty
-                    variant="outlined"
-                    style={{ minWidth: 120 }}
-                >
-                    <MenuItem value="year">Year</MenuItem>
-                    <MenuItem value="month">Month</MenuItem>
-                    <MenuItem value="week">Week</MenuItem>
-                    <MenuItem value="day">Day</MenuItem>
-                </Select>
-
-                {rangeOptions.length > 0 && (
-                    <Select
-                        value={selectedValue}
-                        onChange={(e) => setSelectedValue(e.target.value)}
-                        displayEmpty
-                        variant="outlined"
-                        style={{ minWidth: 120 }}
-                    >
-                        <MenuItem value={null}>All</MenuItem>
-                        {rangeOptions.map((option) => (
-                            <MenuItem key={option} value={option}>
-                                {selectedRange === "month" ? `Month ${option}` : option}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                )}
+                <BasicDatePicker onDateChange={handleDateChange}/>
             </Box>
 
             {/* Data Grid */}
             <Box
+                m="40px 0 0 0"
                 height="75vh"
                 sx={{
                     "& .MuiDataGrid-root": { border: "none" },
                     "& .MuiDataGrid-cell": { borderBottom: "none" },
-                    "& .name-column--cell": { color: colors.greenAccent[300] },
-                    "& .MuiDataGrid-columnHeader": { backgroundColor: colors.blueAccent[700], borderBottom: "none" },
-                    "& .MuiDataGrid-virtualScroller": { backgroundColor: colors.primary[400] },
-                    "& .MuiDataGrid-footerContainer": { borderTop: "none", backgroundColor: colors.blueAccent[700] },
-                    "& .MuiDataGrid-toolbarContainer .MuiButton-text": { color: `${colors.greenAccent[100]} !important`, backgroundColor: colors.blueAccent[700] },
+                    "& .MuiDataGrid-columnHeader": { backgroundColor: colors.blueAccent[700] },
+                    "& .MuiDataGrid-virtualScroller": { backgroundColor: colors.primary[100] },
+                    "& .MuiDataGrid-footerContainer": { borderTop: "none", backgroundColor: colors.blueAccent[700] }
                 }}
             >
                 {loading ? (
