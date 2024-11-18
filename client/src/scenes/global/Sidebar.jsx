@@ -32,9 +32,6 @@ import Settings from "@mui/icons-material/Settings";
 import NotificationMenu from "./NotificationMenu";
 import AnalyticsOutlinedIcon from "@mui/icons-material/AnalyticsOutlined";
 import { useUser } from "../../components/context/UserContext";
-import EngineeringOutlinedIcon from '@mui/icons-material/EngineeringOutlined';
-import AttractionsOutlinedIcon from '@mui/icons-material/AttractionsOutlined';
-
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
 	const theme = useTheme();
@@ -415,83 +412,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 								/>
 							</>
 						)}
-
-
-
-						{/* Departmental Tab Bar */}
-						{user.role === "manager" && (
-							<>
-                  {!isClosed && (
-                    <Typography
-                      variant="h4"
-                      color={colors.grey[300]}
-                      sx={{ m: "15px 0 5px 20px" }}
-                    >
-                      My Roles
-                    </Typography>
-                  )}
-
-
-                {user.email === 2 && (
-                <>
-                  <Item
-                    title="Rides"
-                    to="/rides"
-                    icon={<AttractionsOutlinedIcon />}
-                    selected={selected}
-                    setSelected={setSelected}
-                  />
-                  <Item
-                    title="Maintence Overview"
-                    to="/maintenance-reports"
-                    icon={<EngineeringOutlinedIcon />}
-                    selected={selected}
-                    setSelected={setSelected}
-                  />
-                </>
-              )}
-
-              {user.email === 5 && (
-                <>
-                  <Item
-                    title="Rides"
-                    to="/rides"
-                    icon={<AttractionsOutlinedIcon />}
-                    selected={selected}
-                    setSelected={setSelected}
-                  />
-                  <Item
-                    title="Maintence Overview"
-                    to="/maintenance-reports"
-                    icon={<EngineeringOutlinedIcon />}
-                    selected={selected}
-                    setSelected={setSelected}
-                  />
-                </>
-              )}
-
-
-                {user.email === 11 && (
-                <>
-                  <Item
-                    title="Shops"
-                    to="/shops"
-                    icon={<InventoryIcon />}
-                    selected={selected}
-                    setSelected={setSelected}
-                  />
-                  <Item
-                    title="Supplies"
-                    to="/supplies"
-                    icon={<InventoryIcon />}
-                    selected={selected}
-                    setSelected={setSelected}
-                  />
-                </>
-              )}
-                </>
-						)}
-
 
 						{/* Admin Elements */}
 						{user.role === "admin" && (
