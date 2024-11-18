@@ -68,7 +68,7 @@ const InvoiceReports = () => {
         <Box m="20px">
             {/* Header with Print, Download, and Add Buttons */}
             <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Header title="Rides Reports" subtitle="View ride statistics by selected date range" />
+                <Header title="Invoice Payment Reports" subtitle="View invoice payment statuses by selected date range" />
                 <Box display="flex" alignItems="center">
                     <PrintButton apiUrl={`https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/reports/invoice-status/${startDate}/${endDate}`} columns={columns} />
                     <DownloadButton
@@ -91,6 +91,7 @@ const InvoiceReports = () => {
                 sx={{
                     "& .MuiDataGrid-root": { border: "none" },
                     "& .MuiDataGrid-cell": { borderBottom: "none" },
+                    "& .name-column--cell": { color: colors.greenAccent[700] },
                     "& .MuiDataGrid-columnHeader": { backgroundColor: colors.blueAccent[700] },
                     "& .MuiDataGrid-virtualScroller": { backgroundColor: colors.primary[100] },
                     "& .MuiDataGrid-footerContainer": { borderTop: "none", backgroundColor: colors.blueAccent[700] }

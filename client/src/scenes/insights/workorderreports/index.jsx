@@ -1,4 +1,4 @@
-import { Box, Typography, useTheme } from "@mui/material";
+import { Box, FormControl, InputLabel, MenuItem, Select, Typography, useTheme } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../../theme";
 import Header from "../../../components/Header";
@@ -14,12 +14,14 @@ const MaintenanceReports = () => {
 
     const [workOrderInfo, setWorkOrderInfo] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [workOrderType, setWorkOrderType] = useState("CLOSED(M)"); // Default work order type is "CLOSED(M)"
+
 
     // Fetch data from the API
     useEffect(() => {
         const fetchWorkOrderInfo = async () => {
             try {
-                const response = await axios.get("https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/reports/broken-rides");
+                const response = await axios.get(`https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/reports/broken-rides/${workOrderType}`);
                 console.log("Fetched work-orders:", response.data);
                 setWorkOrderInfo(response.data);
             } catch (error) {
@@ -29,14 +31,14 @@ const MaintenanceReports = () => {
             }
         };
         fetchWorkOrderInfo();
-    }, []);
+    }, [workOrderType]);
 
     // Table columns
     const columns = [
-        { field: "ride_name", headerName: "Ride Name", flex: 1 },
+        { field: "ride_name", headerName: "Ride Name", flex: 1 , cellClassName: "name-column--cell"},
         { field: "last_inspected", headerName: "Last Inspected", flex: 1 },
         { field: "ride_status", headerName: "Ride Status", flex: 1 },
-        { field: "assigned_employee", headerName: "Assigned Employee", flex: 1 },
+        { field: "assigned_employee", headerName: "Assigned Employee", flex: 1, cellClassName: "name-column--cell" },
         { field: "maintenance_type", headerName: "Maintenance Type", flex: 1 },
         { field: "date_created", headerName: "Date Created", flex: 1 },
         { field: "wo_status", headerName: "Work Order Status", flex: 1 }
@@ -48,29 +50,44 @@ const MaintenanceReports = () => {
                 <Header title="Maintenance Reports" subtitle="Review ride maintenance records for the year" />
                 <Box display="flex" alignItems="center">
                     <PrintButton
-                        apiUrl="https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/work-orders/"
+                        apiUrl={`https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/reports/broken-rides/${workOrderType}`}
                         columns={columns}
                     />
                     <DownloadButton
-                        apiUrl="https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/work-orders/"
+                        apiUrl={`https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/reports/broken-rides/${workOrderType}`}
                         fileName="maintenance_report.csv"
                         columns={columns}
                     />
                     <AddButton navigateTo="/maintenanceform" />
                 </Box>
             </Box>
+
+            <Box display="flex" gap="10px" mb="20px">
+                <FormControl variant="outlined" style={{ minWidth: 120 }}>
+                    <Typography>Work Order Type</Typography>
+                    <Select
+                        value={workOrderType}
+                        onChange={(e) => setWorkOrderType(e.target.value)} // Update the work order type
+                        label="Work Order Type"
+                    >
+                        <MenuItem value="CLOSED(M)">CLOSED(M)</MenuItem>
+                        <MenuItem value="CLOSED(R)">CLOSED(R)</MenuItem>
+                    </Select>
+                </FormControl>
+            </Box>
+
             <Box
                 m="40px 0 0 0"
                 height="75vh"
                 sx={{
                     "& .MuiDataGrid-root": { border: "none" },
                     "& .MuiDataGrid-cell": { borderBottom: "none" },
-                    "& .name-column--cell": { color: colors.greenAccent[300] },
+                    "& .name-column--cell": { color: colors.greenAccent[700] },
                     "& .MuiDataGrid-columnHeader": {
                         backgroundColor: colors.blueAccent[700],
                         borderBottom: "none"
                     },
-                    "& .MuiDataGrid-virtualScroller": { backgroundColor: colors.primary[400] },
+                    "& .MuiDataGrid-virtualScroller": { backgroundColor: colors.primary[100] },
                     "& .MuiDataGrid-footerContainer": {
                         borderTop: "none",
                         backgroundColor: colors.blueAccent[700]

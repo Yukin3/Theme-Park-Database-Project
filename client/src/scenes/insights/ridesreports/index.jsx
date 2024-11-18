@@ -23,10 +23,9 @@ const RidesReports = () => {
 
     // Columns for DataGrid
     const columns = [
-        { field: "rowNumber", headerName: "#", width: 60, sortable: false },
-        { field: "ride_name", headerName: "Ride", flex: 1 },
-        { field: "ride_type", headerName: "Category", flex: 1,  cellClassName: "name-column--cell"},
-        { field: "ride_count", headerName: "Ride Count", flex: 1 },
+        { field: "ride_name", headerName: "Ride", flex: 1, cellClassName: "name-column--cell" },
+        { field: "ride_type", headerName: "Category", flex: 1},
+        { field: "ride_count", headerName: "Ride Count", flex: 1, cellClassName: "name-column--cell" },
     ];
 
     
@@ -111,6 +110,7 @@ const RidesReports = () => {
                 sx={{
                     "& .MuiDataGrid-root": { border: "none" },
                     "& .MuiDataGrid-cell": { borderBottom: "none" },
+                    "& .name-column--cell": { color: colors.greenAccent[700] },
                     "& .MuiDataGrid-columnHeader": { backgroundColor: colors.blueAccent[700] },
                     "& .MuiDataGrid-virtualScroller": { backgroundColor: colors.primary[100] },
                     "& .MuiDataGrid-footerContainer": { borderTop: "none", backgroundColor: colors.blueAccent[700] }
