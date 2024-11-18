@@ -46,37 +46,17 @@ useEffect(() => {
 
 
 {/*Colums for employee table */ } {/*field: value/data grabbed from  headerName: column title in table*/}
-const allColumns = [
-    { field: "employee_id", headerName: "EmployeeID", flex: 0.5 },
-    { field: "ssn", headerName: "SSN", flex: 0.5 },
+const columns = [
     { field: "first_name", headerName: "First Name", cellClassName: "name-column--cell" },
     { field: "last_name", headerName: "Last Name", cellClassName: "name-column--cell" },
     { field: "middle_initial", headerName: "MI", cellClassName: "name-column--cell" },
     { field: "phone_number", headerName: "Phone Number" },
     { field: "email", headerName: "Email" },
-    { field: "address_line1", headerName: "Address Line 1" },
-    { field: "address_line2", headerName: "Address Line 2" },
-    { field: "city", headerName: "City" },
-    { field: "state", headerName: "State" },
-    { field: "zip_code", headerName: "Zip Code" },
-    { field: "country", headerName: "Country" },
-    { field: "dob", headerName: "Date of Birth" },
     { field: "start_date", headerName: "Start Date" },
-    { field: "employee_type", headerName: "Employee Type" },
-    { field: "hourly_wage", headerName: "Hourly Wage" },
-    { field: "salary", headerName: "Salary" },
     { field: "job_function", headerName: "Job Function" },
-];
-//what would be visible from shortened columns
-const shortColumns = [
-    { field: "employee_id", headerName: "EmployeeID", flex: 0.5 },
-    { field: "first_name", headerName: "First Name" },
-    { field: "last_name", headerName: "Last Name" },
-    { field: "email", headerName: "Email" },
-    { field: "phone_number", headerName: "Phone Number" }
-];
+    { field: "department_id", headerName: "Lol Function" },
 
-const columnsToShow = showFullColumns ? allColumns : shortColumns;
+];
 
 
 
@@ -86,15 +66,13 @@ const columnsToShow = showFullColumns ? allColumns : shortColumns;
         <Box display="flex" justifyContent="space-between" alignItems="center">
             <Header title="My Employees" subtitle="List of all the employees in your department"/>
             <Box display="flex" alignItems="center">
-                <PrintButton apiUrl={`https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/reports/department-employees/${user.email}`} columns={columnsToShow} />
-                <DownloadButton apiUrl={`https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/reports/department-employees/${user.email}`} fileName="employees_report.csv" columns={columnsToShow} />
+                <PrintButton apiUrl={`https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/reports/department-employees/${user.email}`} columns={columns} />
+                <DownloadButton apiUrl={`https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/reports/department-employees/${user.email}`} fileName="employees_report.csv" columns={columns} />
                 <AddButton navigateTo={'/employeeform'}/>
             </Box>
         </Box>
 
-        <Button variant="contained" onClick={() => setShowFullColumns(!showFullColumns)}>
-            {showFullColumns ? "Show Shortened Columns" : "Show Full Columns"}
-        </Button>
+
         {/*Form fields, missing validation method linkings + user auth */}
             <Box
                 m="40px 0 0 0"
@@ -103,14 +81,14 @@ const columnsToShow = showFullColumns ? allColumns : shortColumns;
                     "& .MuiDataGrid-root": { border: "none" },
                     "& .MuiDataGrid-cell": { borderBottom: "none" },
                     "& .MuiDataGrid-columnHeader": { backgroundColor: colors.blueAccent[700] },
-                    "& .MuiDataGrid-virtualScroller": { backgroundColor: colors.primary[400] },
+                    "& .MuiDataGrid-virtualScroller": { backgroundColor: colors.primary[100] },
                     "& .MuiDataGrid-footerContainer": { borderTop: "none", backgroundColor: colors.blueAccent[700] }
                 }}
             >
                 <DataGrid
                     checkboxSelection
                     rows={employeeData}
-                    columns={columnsToShow} // Use the columns based on the toggle
+                    columns={columns} // Use the columns based on the toggle
                     components={{ Toolbar: GridToolbar }}
                     loading={loading}
                     getRowId={(row) => row.employee_id}
