@@ -7,12 +7,15 @@ import axios from "axios";
 import DownloadButton from "../../components/DownloadButton";
 import AddButton from "../../components/AddButton";
 import PrintButton from "../../components/PrintButton";
+import DeleteButton from "../../components/DeleteButton";
 
 const Maintenance = ({ isOpen }) => {
 	const theme = useTheme();
 	const colors = tokens(theme.palette.mode);
 
 	const [workOrderInfo, setworkOrderInfo] = useState([]);
+	const [selectedRow, setSelectedRow] = useState([]);
+	const [editingRow, setEditingRow] = useState(null);
 	{
 		/*State for storing employee data*/
 	}
@@ -35,6 +38,18 @@ const Maintenance = ({ isOpen }) => {
 
 		fetchworkOrderInfo();
 	}, []);
+
+
+		// Handle row selection
+		const handleRowSelection = (selectionModel) => {
+			setSelectedRow(selectionModel);
+			const selectedRowData =
+				selectionModel.length === 1
+					? workOrderInfo.find((shop) => shop.shop_id === selectionModel[0])
+					: null;
+			setEditingRow(selectedRowData);
+			console.log("Editing Row Data:", selectedRowData); // Log for debugging
+		};
 
 	const columns = [
 		{ field: "woid", headerName: "WorkOrderID", flex: 0.5 },
@@ -63,9 +78,7 @@ const Maintenance = ({ isOpen }) => {
 		{ field: "updated_by", headerName: "Updated By", flex: 0.5 },
 		{ field: "status", headerName: "Status", flex: 0.5 },
 	];
-	{
-		/*field: value/data grabbed from  colName: column title in table */
-	}
+
 
 	return (
 		<Box
@@ -91,6 +104,19 @@ const Maintenance = ({ isOpen }) => {
 						apiUrl="https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/work-orders/"
 						fileName="customers_report.csv"
 						columns={columns}
+					/>
+					<DeleteButton
+						selectedItems={selectedRow}
+						apiUrl="https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/work-orders/"
+						onDeleteSuccess={() => {
+							setworkOrderInfo((prevData) =>
+								prevData.filter(
+									(shop) =>
+										!selectedRow.includes(shop.shop_id)
+								)
+							);
+							setSelectedRow([]);
+						}}
 					/>
 					<AddButton navigateTo="/maintenanceform" />
 				</Box>
@@ -131,6 +157,7 @@ const Maintenance = ({ isOpen }) => {
 					components={{ Toolbar: GridToolbar }}
 					loading={loading}
 					getRowId={(row) => row.woid}
+					onRowSelectionModelChange={handleRowSelection}
 				/>
 			</Box>
 		</Box>
