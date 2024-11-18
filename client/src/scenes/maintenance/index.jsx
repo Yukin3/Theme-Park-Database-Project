@@ -45,7 +45,7 @@ const Maintenance = ({ isOpen }) => {
 			setSelectedRow(selectionModel);
 			const selectedRowData =
 				selectionModel.length === 1
-					? workOrderInfo.find((shop) => shop.shop_id === selectionModel[0])
+					? workOrderInfo.find((wo) => wo.woid === selectionModel[0])
 					: null;
 			setEditingRow(selectedRowData);
 			console.log("Editing Row Data:", selectedRowData); // Log for debugging
@@ -111,8 +111,8 @@ const Maintenance = ({ isOpen }) => {
 						onDeleteSuccess={() => {
 							setworkOrderInfo((prevData) =>
 								prevData.filter(
-									(shop) =>
-										!selectedRow.includes(shop.shop_id)
+									(wo) =>
+										!selectedRow.includes(wo.wo_id)
 								)
 							);
 							setSelectedRow([]);

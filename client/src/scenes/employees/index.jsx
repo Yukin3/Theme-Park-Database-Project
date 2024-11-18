@@ -47,7 +47,7 @@ const Employees = ({ isOpen }) => {
 			setSelectedRow(selectionModel);
 			const selectedRowData =
 				selectionModel.length === 1
-					? employeeData.find((shop) => shop.shop_id === selectionModel[0])
+					? employeeData.find((employee) => employee.employee_id === selectionModel[0])
 					: null;
 			setEditingRow(selectedRowData);
 			console.log("Editing Row Data:", selectedRowData); // Log for debugging

@@ -19,11 +19,11 @@ const TimesheetReports = () => {
 
 
   const columns = [
-    { field: "first_name", headerName: "First Name" },
-    { field: "last_name", headerName: "Last Name" },
-    { field: "job_function", headerName: "Job Function", cellClassName: "name-column--cell" },
-    { field: "department", headerName: "Department", cellClassName: "name-column--cell", flex: 0.5 },
-    { field: "hours_worked", headerName: "Hours Worked" },
+    { field: "first_name", headerName: "First Name", cellClassName: "name-column--cell" },
+    { field: "last_name", headerName: "Last Name", cellClassName: "name-column--cell" },
+    { field: "job_function", headerName: "Job Function" },
+    { field: "department", headerName: "Department", flex: 0.5 },
+    { field: "hours_worked", headerName: "Hours Worked", cellClassName: "name-column--cell"},
 ];
 
     
@@ -77,7 +77,7 @@ const TimesheetReports = () => {
         <Box m="20px">
             {/* Header with Print, Download, and Add Buttons */}
             <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Header title="Rides Reports" subtitle="View ride statistics by selected date range" />
+                <Header title="Timeshett Reports" subtitle="View a sumamry of employee shifts by date range" />
                 <Box display="flex" alignItems="center">
                     <PrintButton apiUrl={`https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/reports/hours-worked/${startDate}/${endDate}`} columns={columns} />
                     <DownloadButton
@@ -100,6 +100,7 @@ const TimesheetReports = () => {
                 sx={{
                     "& .MuiDataGrid-root": { border: "none" },
                     "& .MuiDataGrid-cell": { borderBottom: "none" },
+                    "& .name-column--cell": { color: colors.greenAccent[700] },
                     "& .MuiDataGrid-columnHeader": { backgroundColor: colors.blueAccent[700] },
                     "& .MuiDataGrid-virtualScroller": { backgroundColor: colors.primary[100] },
                     "& .MuiDataGrid-footerContainer": { borderTop: "none", backgroundColor: colors.blueAccent[700] }
