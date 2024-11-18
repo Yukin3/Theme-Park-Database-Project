@@ -9,6 +9,8 @@ import DownloadButton from "../../components/DownloadButton";
 import AddButton from "../../components/AddButton";
 import PrintButton from "../../components/PrintButton";
 import DeleteButton from "../../components/DeleteButton";
+import EditModal from "../../components/EditModal";
+import EditButton from "../../components/EditButton";
 
 const Rides = ({ isOpen }) => {
 	const theme = useTheme();
@@ -19,6 +21,9 @@ const Rides = ({ isOpen }) => {
 	const [loading, setLoading] = useState(true); // State for loading indicator
 	const [selectedRow, setSelectedRow] = useState([]);
 	const [editingRow, setEditingRow] = useState(null);
+
+	const [openModal, setOpenModal] = useState(false);
+	const [editedData, setEditedData] = useState({});
 
 		// Fetch rides from the backend
 		useEffect(() => {
@@ -51,6 +56,36 @@ const Rides = ({ isOpen }) => {
 			console.log("Editing Row Data:", selectedRowData); // Log for debugging
 		};
 
+
+		const handleEditClick = (row) => {
+			console.log("Editing click:", row); 
+			setEditingRow(row);
+			setEditedData(row); 
+			setOpenModal(true);
+		  };
+	
+		  const handleFieldChange = (e, field) => {
+			setEditedData((prev) => ({
+			  ...prev,
+			  [field]: e.target.value,
+			}));
+		  };
+	
+	
+	  const handleSaveChanges = (updatedRow) => {
+		setRides((prevData) =>
+		  prevData.map((ride) =>
+			ride.ride_id === updatedRow.ride_id ? updatedRow : ride
+		  )
+		);
+	  };
+	
+	
+	  const handleCloseModal = () => {
+		setOpenModal(false);
+		setEditedData({});
+	  };
+	
 	
 		const columns = [
 			{ field: "ride_id", headerName: "Ride ID", flex: 0.1 },
@@ -71,6 +106,16 @@ const Rides = ({ isOpen }) => {
 				align: "left",
 			},
 			{ field: "status", headerName: "Status", flex: 0.1 },
+			{
+				field: "actions",
+				headerName: "Actions",
+				renderCell: (params) => (
+			<EditButton
+				onClick={() => handleEditClick(params.row)}  
+				disabled={!params.row} 
+			/>
+				),
+			  },
 		];
 	
 
@@ -106,8 +151,8 @@ const Rides = ({ isOpen }) => {
 						onDeleteSuccess={() => {
 							setRides((prevData) =>
 								prevData.filter(
-									(shop) =>
-										!selectedRow.includes(shop.shop_id)
+									(ride) =>
+										!selectedRow.includes(ride.ride_id)
 								)
 							);
 							setSelectedRow([]);
@@ -157,6 +202,17 @@ const Rides = ({ isOpen }) => {
 					onRowSelectionModelChange={handleRowSelection}
 				/>
 			</Box>
+
+			<EditModal
+				open={openModal}
+				editedData={editedData}
+				onFieldChange={handleFieldChange}
+				onClose={handleCloseModal}
+				apiUrl={`https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/rides/${editingRow?.ride_id}`}
+				onSuccess={handleSaveChanges}
+				originalData={editingRow}
+			/>
+
 		</Box>
 	);
 };

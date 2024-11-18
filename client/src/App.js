@@ -312,7 +312,7 @@ function App() {
 								}
 							/>{" "}
 							<Route
-								path="/my-team"
+								path="/manage-team"
 								element={
 									<ProtectedRoute allowedRoles={["manager"]}>
 										<ManagerStaffView />

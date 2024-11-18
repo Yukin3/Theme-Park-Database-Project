@@ -13,6 +13,8 @@ import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import DownloadButton from "../../components/DownloadButton";
 import PrintButton from "../../components/PrintButton";
 import AddButton from "../../components/AddButton";
+import EditButton from "../../components/EditButton";
+import EditModal from "../../components/EditModal";
 
 const Vendors = ({ isOpen }) => {
 	const theme = useTheme();
@@ -20,6 +22,10 @@ const Vendors = ({ isOpen }) => {
 	const navigate = useNavigate();
 	const [vendorData, setVendorData] = useState([]);
 	const [loading, setLoading] = useState(true);
+	const [selectedvendors, setSelectedvendors] = useState([]);
+	const [editingRow, setEditingRow] = useState(null);
+	const [openModal, setOpenModal] = useState(false);
+	const [editedData, setEditedData] = useState({});
 
 	useEffect(() => {
 		const fetchVendorData = async () => {
@@ -37,6 +43,48 @@ const Vendors = ({ isOpen }) => {
 		};
 		fetchVendorData();
 	}, []);
+
+		// Handle row selection
+		const handleRowSelection = (selectionModel) => {
+			setVendorData(selectionModel);
+			const selectedRowData =
+				selectionModel.length === 1
+					? vendorData.find((vendor) => vendor.vendor_id === selectionModel[0])
+					: null;
+			setEditingRow(selectedRowData);
+			console.log("Editing Row Data:", selectedRowData); 
+		};
+	
+
+	const handleEditClick = (row) => {
+		console.log("Editing click:", row); 
+		setEditingRow(row);
+		setEditedData(row); 
+		setOpenModal(true);
+	  };
+
+	  const handleFieldChange = (e, field) => {
+		setEditedData((prev) => ({
+		  ...prev,
+		  [field]: e.target.value,
+		}));
+	  };
+
+
+  const handleSaveChanges = (updatedRow) => {
+    setVendorData((prevData) =>
+      prevData.map((vendor) =>
+        vendor.vendor_id === updatedRow.vendor_id ? updatedRow : vendor
+      )
+    );
+  };
+
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setEditedData({});
+  };
+
 
 	const columns = [
 		{
@@ -105,6 +153,16 @@ const Vendors = ({ isOpen }) => {
 			flex: 0.2,
 		},
 		{ field: "state", headerName: "State", flex: 0.2 },
+		{
+			field: "actions",
+			headerName: "Actions",
+			renderCell: (params) => (
+		<EditButton
+			onClick={() => handleEditClick(params.row)}  
+			disabled={!params.row} 
+		/>
+			),
+		  },
 	];
 
 	return (
@@ -164,6 +222,17 @@ const Vendors = ({ isOpen }) => {
 					loading={loading}
 				/>
 			</Box>
+
+			<EditModal
+				open={openModal}
+				editedData={editedData}
+				onFieldChange={handleFieldChange}
+				onClose={handleCloseModal}
+				apiUrl={`https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/vendors/${editingRow?.vendor_email}`} //TODO: pass correct varible
+				onSuccess={handleSaveChanges}
+				originalData={editingRow}
+			/>
+
 		</Box>
 	);
 };

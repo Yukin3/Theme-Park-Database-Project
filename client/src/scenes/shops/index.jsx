@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import EditButton from "../../components/EditButton";
 import DeleteButton from "../../components/DeleteButton";
+import EditModal from "../../components/EditModal";
 
 const Shops = ({ isOpen }) => {
 	const theme = useTheme();
@@ -38,7 +39,6 @@ const Shops = ({ isOpen }) => {
 		fetchShopsData();
 	}, []);
 
-	// Handle row selection
 	const handleRowSelection = (selectionModel) => {
 		setSelectedShops(selectionModel);
 		const selectedRowData =
@@ -46,16 +46,17 @@ const Shops = ({ isOpen }) => {
 				? ShopsData.find((shop) => shop.shop_id === selectionModel[0])
 				: null;
 		setEditingRow(selectedRowData);
-		console.log("Editing Row Data:", selectedRowData); // Log for debugging
+		console.log("Editing Row Data:", selectedRowData); 
 	};
 
 
-	//open modal and handle edits
 	 const handleEditClick = (row) => {
+		console.log("Editing click:", row); 
 		setEditingRow(row);
 		setEditedData(row); 
 		setOpenModal(true);
 	  };
+
 	  const handleFieldChange = (e, field) => {
 		setEditedData((prev) => ({
 		  ...prev,
@@ -64,25 +65,15 @@ const Shops = ({ isOpen }) => {
 	  };
 
 
-  //Process and save edits, close modal
-  const handleSaveChanges = async () => {
-    if (!editingRow) return;
-
-    const apiUrl = `https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/shop/${editingRow.shop_id}`;
-
-    try {
-      const response = await axios.put(apiUrl, editedData);
-      console.log("Row updated successfully:", response.data);
-      setShopsData((prev) =>
-        prev.map((facility) =>
-          facility.facility_id === response.data.facility_id ? response.data : facility
-        )
-      );
-      setOpenModal(false);
-    } catch (error) {
-      console.error("Error updating data:", error);
-    }
+  const handleSaveChanges = (updatedRow) => {
+    setShopsData((prevData) =>
+      prevData.map((shop) =>
+        shop.shop_id === updatedRow.shop_id ? updatedRow : shop
+      )
+    );
   };
+
+
   const handleCloseModal = () => {
     setOpenModal(false);
     setEditedData({});
@@ -123,11 +114,10 @@ const Shops = ({ isOpen }) => {
 			field: "actions",
 			headerName: "Actions",
 			renderCell: (params) => (
-			  <EditButton
-				editingRow={params.row}
-				disabled={false}
-				onSuccess={handleSaveChanges}
-			  />
+		<EditButton
+			onClick={() => handleEditClick(params.row)}  
+			disabled={!params.row} 
+		/>
 			),
 		  },
 	];
@@ -156,21 +146,6 @@ const Shops = ({ isOpen }) => {
 						apiUrl="https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/shops/"
 						fileName="shops_report.csv"
 						columns={columns}
-					/>
-					<EditButton
-						editingRow={editingRow}
-						disabled={!editingRow}
-						onSuccess={(updatedRow) => {
-							// Update ShopsData state with the updated row details
-							setShopsData((prevData) =>
-								prevData.map((shop) =>
-									shop.shop_id === updatedRow.shop_id
-										? updatedRow
-										: shop
-								)
-							);
-							setEditingRow(null); // Clear editingRow state after save
-						}}
 					/>
 					<DeleteButton
 						selectedItems={selectedShops}
@@ -221,34 +196,20 @@ const Shops = ({ isOpen }) => {
 					getRowId={(row) => row.shop_id}
 					onRowSelectionModelChange={handleRowSelection}
 				/>
+
 			</Box>
 
+			<EditModal
+				open={openModal}
+				editedData={editedData}
+				onFieldChange={handleFieldChange}
+				onClose={handleCloseModal}
+				apiUrl={`https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/shops/${editingRow?.shop_id}`}
+				onSuccess={handleSaveChanges}
+				originalData={editingRow}
+			/>
 
-		<Dialog open={openModal} onClose={handleCloseModal}>
-        <DialogTitle>Edit Facility</DialogTitle>
-        <DialogContent>
-          {Object.keys(editedData).map((key) => (
-            key !== "facility_id" && ( // Exclude ID field from the modal
-              <TextField
-                key={key}
-                label={key}
-                value={editedData[key] || ''}
-                onChange={(e) => handleFieldChange(e, key)}
-                fullWidth
-                margin="normal"
-              />
-            )
-          ))}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseModal} color="secondary">
-            Cancel
-          </Button>
-          <Button onClick={handleSaveChanges} color="primary">
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+
 		</Box>
 	);
 };

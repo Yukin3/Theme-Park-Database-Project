@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import axios from "axios"; //install if have !! needed for API requests
 import DeleteButton from "../../components/DeleteButton";
 import EditButton from "../../components/EditButton";
+import EditModal from "../../components/EditModal";
 
 //facility_id, facility_name, facility_type, location_id, status
 const Facilities = ({ isOpen }) => {
@@ -55,44 +56,35 @@ const Facilities = ({ isOpen }) => {
 
 
 
-	//open modal and handle edits
-	const handleEditClick = (row) => {
-		setEditingRow(row);
-		setEditedData(row); 
-		setOpenModal(true);
+		const handleEditClick = (row) => {
+			console.log("Editing click:", row); 
+			setEditingRow(row);
+			setEditedData(row); 
+			setOpenModal(true);
+		  };
+	
+		  const handleFieldChange = (e, field) => {
+			setEditedData((prev) => ({
+			  ...prev,
+			  [field]: e.target.value,
+			}));
+		  };
+	
+	
+	  const handleSaveChanges = (updatedRow) => {
+		setFacilitiesData((prevData) =>
+		  prevData.map((facility) =>
+			facility.facility_id === updatedRow.facility_id ? updatedRow : facility
+		  )
+		);
 	  };
-	  const handleFieldChange = (e, field) => {
-		setEditedData((prev) => ({
-		  ...prev,
-		  [field]: e.target.value,
-		}));
+	
+	
+	  const handleCloseModal = () => {
+		setOpenModal(false);
+		setEditedData({});
 	  };
-
-
-  //Process and save edits, close modal
-  const handleSaveChanges = async () => {
-    if (!editingRow) return;
-
-    const apiUrl = `https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/park-factilities/${editingRow.facility_id}`;
-
-    try {
-      const response = await axios.put(apiUrl, editedData);
-      console.log("Row updated successfully:", response.data);
-      setFacilitiesData((prev) =>
-        prev.map((facility) =>
-          facility.facility_id === response.data.facility_id ? response.data : facility
-        )
-      );
-      setOpenModal(false);
-    } catch (error) {
-      console.error("Error updating data:", error);
-    }
-  };
-  const handleCloseModal = () => {
-    setOpenModal(false);
-    setEditedData({});
-  };
-
+	
 
 
 	const columns = [
@@ -110,11 +102,10 @@ const Facilities = ({ isOpen }) => {
 			field: "actions",
 			headerName: "Actions",
 			renderCell: (params) => (
-			  <EditButton
-				editingRow={params.row}
-				disabled={false}
-				onSuccess={handleSaveChanges}
-			  />
+		<EditButton
+			onClick={() => handleEditClick(params.row)}  
+			disabled={!params.row} 
+		/>
 			),
 		  },
 	];
@@ -151,8 +142,8 @@ const Facilities = ({ isOpen }) => {
 						onDeleteSuccess={() => {
 							setFacilitiesData((prevData) =>
 								prevData.filter(
-									(shop) =>
-										!selectedRow.includes(shop.shop_id)
+									(facility) =>
+										!selectedRow.includes(facility.facility_id)
 								)
 							);
 							setSelectedRow([]);
@@ -201,31 +192,15 @@ const Facilities = ({ isOpen }) => {
 				/>
 			</Box>
 
-			<Dialog open={openModal} onClose={handleCloseModal}>
-        <DialogTitle>Edit Facility</DialogTitle>
-        <DialogContent>
-          {Object.keys(editedData).map((key) => (
-            key !== "facility_id" && ( // Exclude ID field from the modal
-              <TextField
-                key={key}
-                label={key}
-                value={editedData[key] || ''}
-                onChange={(e) => handleFieldChange(e, key)}
-                fullWidth
-                margin="normal"
-              />
-            )
-          ))}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseModal} color="secondary">
-            Cancel
-          </Button>
-          <Button onClick={handleSaveChanges} color="primary">
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+			<EditModal
+				open={openModal}
+				editedData={editedData}
+				onFieldChange={handleFieldChange}
+				onClose={handleCloseModal}
+				apiUrl={`https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/park-factilities/${editingRow?.facility_id}`}
+				onSuccess={handleSaveChanges}
+				originalData={editingRow}
+			/>
 
 
 		</Box>
