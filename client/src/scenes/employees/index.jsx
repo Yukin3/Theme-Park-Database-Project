@@ -12,6 +12,8 @@ import DownloadButton from "../../components/DownloadButton";
 import AddButton from "../../components/AddButton";
 import PrintButton from "../../components/PrintButton";
 import DeleteButton from "../../components/DeleteButton";
+import EditButton from "../../components/EditButton";
+import EditModal from "../../components/EditModal";
 
 const Employees = ({ isOpen }) => {
 	const theme = useTheme();
@@ -22,6 +24,10 @@ const Employees = ({ isOpen }) => {
 	const [loading, setLoading] = useState(true); // Loading state
 	const [selectedRow, setSelectedRow] = useState([]);
 	const [editingRow, setEditingRow] = useState(null);	
+
+	const [openModal, setOpenModal] = useState(false);
+	const [editedData, setEditedData] = useState({});
+
 
 	useEffect(() => {
 		const fetchEmployeeData = async () => {
@@ -53,7 +59,34 @@ const Employees = ({ isOpen }) => {
 			console.log("Editing Row Data:", selectedRowData); // Log for debugging
 		};
 
-
+		const handleEditClick = (row) => {
+			console.log("Editing click:", row); 
+			setEditingRow(row);
+			setEditedData(row); 
+			setOpenModal(true);
+		  };
+	
+		  const handleFieldChange = (e, field) => {
+			setEditedData((prev) => ({
+			  ...prev,
+			  [field]: e.target.value,
+			}));
+		  };
+	
+	
+	  const handleSaveChanges = (updatedRow) => {
+		setEmployeeData((prevData) =>
+		  prevData.map((employee) =>
+			employee.employee_id === updatedRow.employee_id ? updatedRow : employee
+		  )
+		);
+	  };
+	
+	
+	  const handleCloseModal = () => {
+		setOpenModal(false);
+		setEditedData({});
+	  };
 			
 
 	const columns = [
@@ -89,41 +122,51 @@ const Employees = ({ isOpen }) => {
 		{ field: "salary", headerName: "Salary" },
 		{ field: "job_function", headerName: "Job Function" },
 		{
-			field: "access",
-			headerName: "Access Level",
-			flex: 1,
-			renderCell: ({ row: { access } }) => {
-				return (
-					<Box
-						width="60%"
-						m="0 auto"
-						p="5px"
-						display="flex"
-						justifyContent="center"
-						backgroundColor={
-							access === "admin"
-								? colors.greenAccent[600]
-								: colors.greenAccent[700]
-						}
-						borderRadius="4px"
-					>
-						{access === "admin" && (
-							<AdminPanelSettingsOutlinedIcon />
-						)}
-						{access === "manager" && <SecurityOutlinedIcon />}
-						{access === "user" && <LockOpenOutlinedIcon />}
-						<p
-							style={{
-								marginLeft: "5px",
-								color: colors.grey[100],
-							}}
-						>
-							{access}
-						</p>
-					</Box>
-				);
-			},
-		},
+			field: "actions",
+			headerName: "Actions",
+			renderCell: (params) => (
+		<EditButton
+			onClick={() => handleEditClick(params.row)}  
+			disabled={!params.row} 
+		/>
+			),
+		  },
+		// {
+		// 	field: "access",
+		// 	headerName: "Access Level",
+		// 	flex: 1,
+		// 	renderCell: ({ row: { access } }) => {
+		// 		return (
+		// 			<Box
+		// 				width="60%"
+		// 				m="0 auto"
+		// 				p="5px"
+		// 				display="flex"
+		// 				justifyContent="center"
+		// 				backgroundColor={
+		// 					access === "admin"
+		// 						? colors.greenAccent[600]
+		// 						: colors.greenAccent[700]
+		// 				}
+		// 				borderRadius="4px"
+		// 			>
+		// 				{access === "admin" && (
+		// 					<AdminPanelSettingsOutlinedIcon />
+		// 				)}
+		// 				{access === "manager" && <SecurityOutlinedIcon />}
+		// 				{access === "user" && <LockOpenOutlinedIcon />}
+		// 				<p
+		// 					style={{
+		// 						marginLeft: "5px",
+		// 						color: colors.grey[100],
+		// 					}}
+		// 				>
+		// 					{access}
+		// 				</p>
+		// 			</Box>
+		// 		);
+		// 	},
+		// },
 	];
 
 	return (
@@ -155,8 +198,8 @@ const Employees = ({ isOpen }) => {
 						onDeleteSuccess={() => {
 							setEmployeeData((prevData) =>
 								prevData.filter(
-									(shop) =>
-										!selectedRow.includes(shop.shop_id)
+									(employee) =>
+										!selectedRow.includes(employee.employee_id)
 								)
 							);
 							setSelectedRow([]);
@@ -196,6 +239,21 @@ const Employees = ({ isOpen }) => {
 					onRowSelectionModelChange={handleRowSelection}
 				/>
 			</Box>
+
+
+
+
+			<EditModal
+				open={openModal}
+				editedData={editedData}
+				onFieldChange={handleFieldChange}
+				onClose={handleCloseModal}
+				apiUrl={`https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/employees/${editingRow?.employee_id}`}
+				onSuccess={handleSaveChanges}
+				originalData={editingRow}
+			/>
+
+
 		</Box>
 	);
 };

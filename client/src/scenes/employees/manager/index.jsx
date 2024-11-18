@@ -12,6 +12,8 @@ import DownloadButton from "../../../components/DownloadButton";
 import AddButton from "../../../components/AddButton";
 import PrintButton from "../../../components/PrintButton";
 import { useUser } from "../../../components/context/UserContext";
+import EditModal from "../../../components/EditModal";
+import EditButton from "../../../components/EditButton";
 
 
 const MyEmployees = () => {
@@ -20,10 +22,13 @@ const colors = tokens(theme.palette.mode);
 const navigate = useNavigate();
 const {user} = useUser();
 
-
 const [employeeData, setEmployeeData] = useState([]); {/*State for storing employee data*/}
 const [loading, setLoading] = useState(true); // Loading state
-const [showFullColumns, setShowFullColumns] = useState(true);
+
+const [selectedEmployees, setSelectedEmployees] = useState([]);
+const [editingRow, setEditingRow] = useState(null);
+const [openModal, setOpenModal] = useState(false);
+const [editedData, setEditedData] = useState({});
 
 
 {/*Fetch employee data from endpoints when table is pulled*/}
@@ -44,9 +49,48 @@ useEffect(() => {
     }, []);
 
 
+	const handleRowSelection = (selectionModel) => {
+		setSelectedEmployees(selectionModel);
+		const selectedRowData =
+			selectionModel.length === 1
+				? employeeData.find((emp) => emp.emp_id === selectionModel[0])
+				: null;
+		setEditingRow(selectedRowData);
+		console.log("Editing Row Data:", selectedRowData); 
+	};
 
-{/*Colums for employee table */ } {/*field: value/data grabbed from  headerName: column title in table*/}
-const columns = [
+
+	 const handleEditClick = (row) => {
+		console.log("Editing click:", row); 
+		setEditingRow(row);
+		setEditedData(row); 
+		setOpenModal(true);
+	  };
+
+	  const handleFieldChange = (e, field) => {
+		setEditedData((prev) => ({
+		  ...prev,
+		  [field]: e.target.value,
+		}));
+	  };
+
+
+  const handleSaveChanges = (updatedRow) => {
+    setEmployeeData((prevData) =>
+      prevData.map((emp) =>
+        emp.emp_id === updatedRow.emp_id ? updatedRow : emp
+      )
+    );
+  };
+
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setEditedData({});
+  };
+
+
+    const columns = [
     { field: "first_name", headerName: "First Name", cellClassName: "name-column--cell" },
     { field: "last_name", headerName: "Last Name", cellClassName: "name-column--cell" },
     { field: "middle_initial", headerName: "MI", cellClassName: "name-column--cell" },
@@ -54,7 +98,7 @@ const columns = [
     { field: "email", headerName: "Email" },
     { field: "start_date", headerName: "Start Date" },
     { field: "job_function", headerName: "Job Function" },
-    { field: "department_id", headerName: "Lol Function" },
+    { field: "department_id", headerName: "Department ID" },
 
 ];
 
@@ -74,17 +118,29 @@ const columns = [
 
 
         {/*Form fields, missing validation method linkings + user auth */}
-            <Box
-                m="40px 0 0 0"
-                height="75vh"
-                sx={{
-                    "& .MuiDataGrid-root": { border: "none" },
-                    "& .MuiDataGrid-cell": { borderBottom: "none" },
-                    "& .MuiDataGrid-columnHeader": { backgroundColor: colors.blueAccent[700] },
-                    "& .MuiDataGrid-virtualScroller": { backgroundColor: colors.primary[100] },
-                    "& .MuiDataGrid-footerContainer": { borderTop: "none", backgroundColor: colors.blueAccent[700] }
-                }}
-            >
+        <Box
+				m="10px 0 0 0"
+				height="75vh"
+				sx={{
+					"& .MuiDataGrid-root": { border: "none" },
+					"& .MuiDataGrid-cell": { borderBottom: "none" },
+					"& .name-column--cell": { color: colors.greenAccent[300] },
+					"& .MuiDataGrid-columnHeader": {
+						backgroundColor: colors.blueAccent[700],
+						borderBottom: "none",
+					},
+					"& .MuiDataGrid-virtualScroller": {
+						backgroundColor: colors.primary[300],
+					},
+					"& .MuiDataGrid-footerContainer": {
+						borderTop: "none",
+						backgroundColor: colors.blueAccent[700],
+					},
+					"& .Mui-selected": {
+						backgroundColor: colors.primary[200], // Highlight edited row
+					},
+				}}
+			>
                 <DataGrid
                     checkboxSelection
                     rows={employeeData}
@@ -94,6 +150,18 @@ const columns = [
                     getRowId={(row) => row.employee_id}
                 />
             </Box>
+
+            <EditModal
+				open={openModal}
+				editedData={editedData}
+				onFieldChange={handleFieldChange}
+				onClose={handleCloseModal}
+				apiUrl={`https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/department-employees/${editingRow?.employee_id}`}
+				onSuccess={handleSaveChanges}
+				originalData={editingRow}
+			/>
+
+
         </Box>
     );
 };

@@ -260,75 +260,9 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 							</>
 						)}
 
-						{/* Departmental Tab Bar */}
 
-						{/* Manager Elements */}
-						{user.role === "manager" && (
-							<>
-								{!isClosed && (
-									<Typography
-										variant="h4"
-										color={colors.grey[300]}
-										sx={{ m: "15px 0 5px 20px" }}
-									>
-										My Team
-									</Typography>
-								)}
-								<Item
-									title="Manage Team"
-									to="/my-team"
-									icon={<PeopleOutlinedIcon />}
-									selected={selected}
-									setSelected={setSelected}
-								/>
-								<Item
-									title="Budget"
-									to=""
-									icon={<HandymanIcon />}
-									selected={selected}
-									setSelected={setSelected}
-								/>
-								<Item
-									title="Meetings"
-									to=""
-									icon={<TourIcon />}
-									selected={selected}
-									setSelected={setSelected}
-								/>
-								{!isClosed && (
-									<Typography
-										variant="h4"
-										color={colors.grey[300]}
-										sx={{ m: "15px 0 5px 20px" }}
-									>
-										Communication and Planning
-									</Typography>
-								)}
-								<Item
-									title="Tasks"
-									to=""
-									icon={<InsightsIcon />}
-									selected={selected}
-									setSelected={setSelected}
-								/>
-								<Item
-									title="Workflow"
-									to=""
-									icon={<ReceiptOutlinedIcon />}
-									selected={selected}
-									setSelected={setSelected}
-								/>
-								<Item
-									title="Announcements"
-									to=""
-									icon={<AnalyticsOutlinedIcon />}
-									selected={selected}
-									setSelected={setSelected}
-								/>
-							</>
-						)}
 
-						{/* Park Overview (Admin) */}
+						{/* Admin elements 1 */}
 						{user.role === "admin" && (
 							<>
 								{isOpen && (
@@ -357,7 +291,8 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 							</>
 						)}
 
-						{/* Manager Elements */}
+
+						{/* Manager Elements 1 */}
 						{user.role === "manager" && (
 							<>
 								{isOpen && (
@@ -371,7 +306,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 								)}
 								<Item
 									title="Manage Team"
-									to="/my-team"
+									to="/manage-team"
 									icon={<PeopleOutlinedIcon />}
 									selected={selected}
 									setSelected={setSelected}
@@ -423,7 +358,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 							</>
 						)}
 
-						{/* Admin Elements */}
+						{/* Admin Elements 2 */}
 						{user.role === "admin" && (
 							<>
 								<Item
@@ -449,20 +384,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 										Team and Operations
 									</Typography>
 								)}
-								<Item
-									title="Rides & Attractions"
-									to="/rides"
-									icon={<LocalActivityIcon />}
-									selected={selected}
-									setSelected={setSelected}
-								/>
-								<Item
-									title="Park Safety"
-									to="/safety"
-									icon={<SecurityIcon />}
-									selected={selected}
-									setSelected={setSelected}
-								/>
+
 								<Item
 									title="Manage Staff"
 									to="/managestaff"
