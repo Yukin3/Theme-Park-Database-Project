@@ -11,6 +11,7 @@ import axios from "axios"; //install if have !! needed for API requests
 import DownloadButton from "../../components/DownloadButton";
 import AddButton from "../../components/AddButton";
 import PrintButton from "../../components/PrintButton";
+import DeleteButton from "../../components/DeleteButton";
 
 const Employees = ({ isOpen }) => {
 	const theme = useTheme();
@@ -18,15 +19,10 @@ const Employees = ({ isOpen }) => {
 	const navigate = useNavigate();
 
 	const [employeeData, setEmployeeData] = useState([]);
-	{
-		/*State for storing employee data*/
-	}
 	const [loading, setLoading] = useState(true); // Loading state
-	const [showFullColumns, setShowFullColumns] = useState(true);
+	const [selectedRow, setSelectedRow] = useState([]);
+	const [editingRow, setEditingRow] = useState(null);	
 
-	{
-		/*Fetch employee data from endpoints when table is pulled*/
-	}
 	useEffect(() => {
 		const fetchEmployeeData = async () => {
 			try {
@@ -45,13 +41,22 @@ const Employees = ({ isOpen }) => {
 		fetchEmployeeData();
 	}, []);
 
-	{
-		/*Colums for employee table */
-	}
-	{
-		/*field: value/data grabbed from  headerName: column title in table*/
-	}
-	const allColumns = [
+
+		// Handle row selection
+		const handleRowSelection = (selectionModel) => {
+			setSelectedRow(selectionModel);
+			const selectedRowData =
+				selectionModel.length === 1
+					? employeeData.find((shop) => shop.shop_id === selectionModel[0])
+					: null;
+			setEditingRow(selectedRowData);
+			console.log("Editing Row Data:", selectedRowData); // Log for debugging
+		};
+
+
+			
+
+	const columns = [
 		{ field: "employee_id", headerName: "EmployeeID", flex: 0.5 },
 		{ field: "ssn", headerName: "SSN", flex: 0.5 },
 		{
@@ -120,16 +125,6 @@ const Employees = ({ isOpen }) => {
 			},
 		},
 	];
-	//what would be visible from shortened columns
-	const shortColumns = [
-		{ field: "employee_id", headerName: "EmployeeID", flex: 0.5 },
-		{ field: "first_name", headerName: "First Name" },
-		{ field: "last_name", headerName: "Last Name" },
-		{ field: "email", headerName: "Email" },
-		{ field: "phone_number", headerName: "Phone Number" },
-	];
-
-	const columnsToShow = showFullColumns ? allColumns : shortColumns;
 
 	return (
 		<Box
@@ -143,29 +138,35 @@ const Employees = ({ isOpen }) => {
 				justifyContent="space-between"
 				alignItems="center"
 			>
-				<Header title="All Employees✅" subtitle="...." />
+				<Header title="All Employees" subtitle="...." />
 				<Box display="flex" alignItems="center">
 					<PrintButton
 						apiUrl="https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/employees/"
-						columns={columnsToShow}
+						columns={columns}
 					/>
 					<DownloadButton
 						apiUrl="https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/employees/"
 						fileName="employees_report.csv"
-						columns={columnsToShow}
+						columns={columns}
+					/>
+					<DeleteButton
+						selectedItems={selectedRow}
+						apiUrl="https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/employees/"
+						onDeleteSuccess={() => {
+							setEmployeeData((prevData) =>
+								prevData.filter(
+									(shop) =>
+										!selectedRow.includes(shop.shop_id)
+								)
+							);
+							setSelectedRow([]);
+						}}
 					/>
 					<AddButton navigateTo={"/employeeform"} />
 				</Box>
 			</Box>
 
-			<Button
-				variant="contained"
-				onClick={() => setShowFullColumns(!showFullColumns)}
-			>
-				{showFullColumns
-					? "Show Shortened Columns"
-					: "Show Full Columns"}
-			</Button>
+
 			{/*Form fields, missing validation method linkings + user auth */}
 			<Box
 				m="40px 0 0 0"
@@ -188,10 +189,11 @@ const Employees = ({ isOpen }) => {
 				<DataGrid
 					checkboxSelection
 					rows={employeeData}
-					columns={columnsToShow} // Use the columns based on the toggle
+					columns={columns} // Use the columns based on the toggle
 					components={{ Toolbar: GridToolbar }}
 					loading={loading}
 					getRowId={(row) => row.employee_id}
+					onRowSelectionModelChange={handleRowSelection}
 				/>
 			</Box>
 		</Box>
