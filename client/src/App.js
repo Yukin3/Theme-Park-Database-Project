@@ -66,6 +66,7 @@ import ConfirmationPage from "./scenes/confirmation";
 import MyTickets from "./scenes/mytickets";
 import Footer from "./components/Footer";
 import ProfilePage from "./scenes/profile";
+import MyTeam from "./scenes/employees/worker";
 
 function App() {
 	const navigate = useNavigate();
@@ -259,6 +260,14 @@ function App() {
 								element={
 									<ProtectedRoute allowedRoles={["admin"]}>
 										<Invoices />
+									</ProtectedRoute>
+								}
+							/>{" "}
+							<Route
+								path="/my-team"
+								element={
+									<ProtectedRoute allowedRoles={["employee"]}>
+										<MyTeam />
 									</ProtectedRoute>
 								}
 							/>{" "}

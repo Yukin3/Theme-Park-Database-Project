@@ -32,6 +32,9 @@ import Settings from "@mui/icons-material/Settings";
 import NotificationMenu from "./NotificationMenu";
 import AnalyticsOutlinedIcon from "@mui/icons-material/AnalyticsOutlined";
 import { useUser } from "../../components/context/UserContext";
+import GroupsIcon from '@mui/icons-material/Groups';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import PunchClockIcon from '@mui/icons-material/PunchClock';
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
 	const theme = useTheme();
@@ -236,14 +239,21 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 								<Item
 									title="Timesheet"
 									to="/clockin"
-									icon={<AccessibilityNewIcon />}
+									icon={<PunchClockIcon />}
 									selected={selected}
 									setSelected={setSelected}
 								/>
 								<Item
 									title="Payroll"
 									to="/mypayroll"
-									icon={<InventoryIcon />}
+									icon={<MonetizationOnIcon />}
+									selected={selected}
+									setSelected={setSelected}
+								/>
+								<Item
+									title="My Team"
+									to="/my-team"
+									icon={<GroupsIcon />}
 									selected={selected}
 									setSelected={setSelected}
 								/>
