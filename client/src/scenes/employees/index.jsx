@@ -14,6 +14,8 @@ import PrintButton from "../../components/PrintButton";
 import DeleteButton from "../../components/DeleteButton";
 import EditButton from "../../components/EditButton";
 import EditModal from "../../components/EditModal";
+import AddModal from "../../components/AddModal";
+
 
 const Employees = ({ isOpen }) => {
 	const theme = useTheme();
@@ -27,6 +29,8 @@ const Employees = ({ isOpen }) => {
 
 	const [openModal, setOpenModal] = useState(false);
 	const [editedData, setEditedData] = useState({});
+	const [openAddModal, setOpenAddModal] = useState(false); 
+
 
 
 	useEffect(() => {
@@ -87,6 +91,21 @@ const Employees = ({ isOpen }) => {
 		setOpenModal(false);
 		setEditedData({});
 	  };
+
+
+	  const handleAddClick = () => {
+		setEditedData({}); // Initialize with empty data for new row
+		setOpenAddModal(true);  // Open the Add Modal
+	  };
+	
+	
+	  const handleAddSuccess = (newRow) => {
+		setEmployeeData((prevData) => [...prevData, newRow]);  // Add the new row to the data
+	  };
+	
+	  const handleCloseAddModal = () => {
+		setOpenAddModal(false);
+	  };
 			
 
 	const columns = [
@@ -107,20 +126,20 @@ const Employees = ({ isOpen }) => {
 			headerName: "MI",
 			cellClassName: "name-column--cell",
 		},
-		{ field: "phone_number", headerName: "Phone Number" },
-		{ field: "email", headerName: "Email" },
-		{ field: "address_line1", headerName: "Address Line 1" },
-		{ field: "address_line2", headerName: "Address Line 2" },
-		{ field: "city", headerName: "City" },
-		{ field: "state", headerName: "State" },
-		{ field: "zip_code", headerName: "Zip Code" },
-		{ field: "country", headerName: "Country" },
-		{ field: "dob", headerName: "Date of Birth" },
-		{ field: "start_date", headerName: "Start Date" },
-		{ field: "employee_type", headerName: "Employee Type" },
-		{ field: "hourly_wage", headerName: "Hourly Wage" },
+		{ field: "phone_number", headerName: "Phone Number", editable: true, },
+		{ field: "email", headerName: "Email" , editable: true,},
+		{ field: "address_line1", headerName: "Address Line 1" , editable: true,},
+		{ field: "address_line2", headerName: "Address Line 2", editable: true, },
+		{ field: "city", headerName: "City, editable: true," },
+		{ field: "state", headerName: "State" , editable: true,},
+		{ field: "zip_code", headerName: "Zip Code", editable: true, },
+		{ field: "country", headerName: "Country", editable: true, },
+		{ field: "dob", headerName: "Date of Birth", editable: true, },
+		{ field: "start_date", headerName: "Start Date", editable: true, },
+		{ field: "employee_type", headerName: "Employee Type", editable: true, },
+		{ field: "hourly_wage", headerName: "Hourly Wage", editable: true, },
 		{ field: "salary", headerName: "Salary" },
-		{ field: "job_function", headerName: "Job Function" },
+		{ field: "job_function", headerName: "Job Function", editable: true, },
 		{
 			field: "actions",
 			headerName: "Actions",
@@ -205,8 +224,8 @@ const Employees = ({ isOpen }) => {
 							setSelectedRow([]);
 						}}
 					/>
-					<AddButton navigateTo={"/employeeform"} />
-				</Box>
+					<AddButton onClick={handleAddClick} />
+					</Box>
 			</Box>
 
 
@@ -251,6 +270,16 @@ const Employees = ({ isOpen }) => {
 				apiUrl={`https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/employees/${editingRow?.employee_id}`}
 				onSuccess={handleSaveChanges}
 				originalData={editingRow}
+			/>
+
+			<AddModal
+				open={openAddModal}
+				editedData={editedData}  
+				onFieldChange={handleFieldChange}  
+				onClose={handleCloseAddModal} 
+				apiUrl="https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/employees/" 
+				onSuccess={handleAddSuccess}  
+				columns={columns} 
 			/>
 
 

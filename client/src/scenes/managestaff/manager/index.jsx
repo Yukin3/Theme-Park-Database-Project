@@ -11,9 +11,7 @@ import Departments from "../../departments";
 const ManagerStaffView = ({ isOpen }) => {
 	const navigate = useNavigate();
 
-	{
-		/*Table/Tab state management */
-	}
+
 	const [activeTab, setActiveTab] = useState("My Department");
 	const tabs = ["My Department", "Timesheets"]; // Page table tabs
 	// Function to render the correct table component
