@@ -14,7 +14,7 @@ const MaintenanceReports = () => {
 
     const [workOrderInfo, setWorkOrderInfo] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [workOrderType, setWorkOrderType] = useState("CLOSED(M)"); // Default work order type is "CLOSED(M)"
+    const [workOrderType, setWorkOrderType] = useState("inspection"); // Default work order type is "CLOSED(M)"
 
 
     // Fetch data from the API
@@ -47,7 +47,7 @@ const MaintenanceReports = () => {
     return (
         <Box m="20px">
             <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Header title="Maintenance Reports" subtitle="Review ride maintenance records for the year" />
+                <Header title="Maintenance Reports" subtitle="Review ride maintenance records by service type" />
                 <Box display="flex" alignItems="center">
                     <PrintButton
                         apiUrl={`https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/reports/broken-rides/${workOrderType}`}
@@ -70,11 +70,13 @@ const MaintenanceReports = () => {
                         onChange={(e) => setWorkOrderType(e.target.value)} // Update the work order type
                         label="Work Order Type"
                     >
-                        <MenuItem value="CLOSED(M)">CLOSED(M)</MenuItem>
-                        <MenuItem value="CLOSED(R)">CLOSED(R)</MenuItem>
+                        <MenuItem value="Inspection">Inspection</MenuItem>
+                        <MenuItem value="Repair">Repair</MenuItem>
+                        <MenuItem value="Upgrade">Upgrade</MenuItem>
                     </Select>
                 </FormControl>
             </Box>
+
 
             <Box
                 m="40px 0 0 0"
@@ -83,16 +85,9 @@ const MaintenanceReports = () => {
                     "& .MuiDataGrid-root": { border: "none" },
                     "& .MuiDataGrid-cell": { borderBottom: "none" },
                     "& .name-column--cell": { color: colors.greenAccent[700] },
-                    "& .MuiDataGrid-columnHeader": {
-                        backgroundColor: colors.blueAccent[700],
-                        borderBottom: "none"
-                    },
+                    "& .MuiDataGrid-columnHeader": { backgroundColor: colors.blueAccent[700] },
                     "& .MuiDataGrid-virtualScroller": { backgroundColor: colors.primary[100] },
-                    "& .MuiDataGrid-footerContainer": {
-                        borderTop: "none",
-                        backgroundColor: colors.blueAccent[700]
-                    },
-                    "& .MuiCheckbox-root": { color: `${colors.greenAccent[200]} !important` }
+                    "& .MuiDataGrid-footerContainer": { borderTop: "none", backgroundColor: colors.blueAccent[700] }
                 }}
             >
                 <DataGrid
