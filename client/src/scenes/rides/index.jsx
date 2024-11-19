@@ -11,6 +11,7 @@ import PrintButton from "../../components/PrintButton";
 import DeleteButton from "../../components/DeleteButton";
 import EditModal from "../../components/EditModal";
 import EditButton from "../../components/EditButton";
+import AddModal from "../../components/AddModal";
 
 const Rides = ({ isOpen }) => {
 	const theme = useTheme();
@@ -24,6 +25,8 @@ const Rides = ({ isOpen }) => {
 
 	const [openModal, setOpenModal] = useState(false);
 	const [editedData, setEditedData] = useState({});
+	const [openAddModal, setOpenAddModal] = useState(false); 
+
 
 		// Fetch rides from the backend
 		useEffect(() => {
@@ -85,27 +88,47 @@ const Rides = ({ isOpen }) => {
 		setOpenModal(false);
 		setEditedData({});
 	  };
+
+
+
+
+	  const handleAddClick = () => {
+		setEditedData({}); // Initialize with empty data for new row
+		setOpenAddModal(true);  // Open the Add Modal
+	  };
+	
+	
+	  const handleAddSuccess = (newRow) => {
+		setRides((prevData) => [...prevData, newRow]);  // Add the new row to the data
+	  };
+	
+	  const handleCloseAddModal = () => {
+		setOpenAddModal(false);
+	  };
+	
 	
 	
 		const columns = [
-			{ field: "ride_id", headerName: "Ride ID", flex: 0.1 },
-			{ field: "section_id", headerName: "Section ID", flex: 0.1 },
+			{ field: "ride_id", headerName: "Ride ID", flex: 0.1, editable: true, },
+			{ field: "section_id", headerName: "Section ID", flex: 0.1, editable: true, },
 			{
 				field: "name",
 				headerName: "Name",
 				flex: 0.3,
 				cellClassName: "name-column--cell",
+				editable: true,
 			},
-			{ field: "ride_type", headerName: "Ride Type", flex: 0.1 },
-			{ field: "last_inspected", headerName: "Last Inspected", flex: 0.1 },
-			{ field: "height_requirement", headerName: "Height Req.", flex: 0.1 },
+			{ field: "ride_type", headerName: "Ride Type", flex: 0.1, editable: true, },
+			{ field: "last_inspected", headerName: "Last Inspected", flex: 0.1, editable: true, },
+			{ field: "height_requirement", headerName: "Height Req.", flex: 0.1, editable: true, },
 			{
 				field: "capacity",
 				headerName: "Capacity",
 				type: "number",
-				align: "left",
+				align: "left", 
+				editable: true,
 			},
-			{ field: "status", headerName: "Status", flex: 0.1 },
+			{ field: "status", headerName: "Status", flex: 0.1, editable: true, },
 			{
 				field: "actions",
 				headerName: "Actions",
@@ -158,8 +181,8 @@ const Rides = ({ isOpen }) => {
 							setSelectedRow([]);
 						}}
 					/>
-					<AddButton navigateTo="/rideform" />
-				</Box>
+					<AddButton onClick={handleAddClick} />
+					</Box>
 			</Box>
 			{/*To display inventory*/}
 			<Box
@@ -211,6 +234,15 @@ const Rides = ({ isOpen }) => {
 				apiUrl={`https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/rides/${editingRow?.ride_id}`}
 				onSuccess={handleSaveChanges}
 				originalData={editingRow}
+			/>
+			<AddModal
+				open={openAddModal}
+				editedData={editedData}  
+				onFieldChange={handleFieldChange}  
+				onClose={handleCloseAddModal} 
+				apiUrl="https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/rides/" 
+				onSuccess={handleAddSuccess}  
+				columns={columns} 
 			/>
 
 		</Box>

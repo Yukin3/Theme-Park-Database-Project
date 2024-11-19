@@ -10,6 +10,7 @@ import axios from "axios";
 import EditButton from "../../components/EditButton";
 import DeleteButton from "../../components/DeleteButton";
 import EditModal from "../../components/EditModal";
+import AddModal from "../../components/AddModal";
 
 const Shops = ({ isOpen }) => {
 	const theme = useTheme();
@@ -21,6 +22,7 @@ const Shops = ({ isOpen }) => {
 
 	const [openModal, setOpenModal] = useState(false);
 	const [editedData, setEditedData] = useState({});
+	const [openAddModal, setOpenAddModal] = useState(false); 
 
 	useEffect(() => {
 		const fetchShopsData = async () => {
@@ -38,6 +40,7 @@ const Shops = ({ isOpen }) => {
 		};
 		fetchShopsData();
 	}, []);
+	
 
 	const handleRowSelection = (selectionModel) => {
 		setSelectedShops(selectionModel);
@@ -80,10 +83,24 @@ const Shops = ({ isOpen }) => {
   };
 
 
+  const handleAddClick = () => {
+    setEditedData({}); // Initialize with empty data for new row
+    setOpenAddModal(true);  // Open the Add Modal
+  };
+
+
+  const handleAddSuccess = (newRow) => {
+    setShopsData((prevData) => [...prevData, newRow]);  // Add the new row to the data
+  };
+
+  const handleCloseAddModal = () => {
+    setOpenAddModal(false);
+  };
+
 
 	// Define columns with editable properties
 	const columns = [
-		{ field: "shop_id", headerName: "ShopID", flex: 1 },
+		{ field: "shop_id", headerName: "ShopID", flex: 1 , editable: true,},
 		{
 			field: "shop_name",
 			headerName: "Shop Name",
@@ -91,7 +108,7 @@ const Shops = ({ isOpen }) => {
 			editable: true,
 		},
 		{ field: "address", headerName: "Address", flex: 1, editable: true },
-		{ field: "park_section_id", headerName: "Park Section ID", flex: 1 },
+		{ field: "park_section_id", headerName: "Park Section ID", flex: 1, editable: true, },
 		{
 			field: "manager_id",
 			headerName: "Manager ID",
@@ -160,7 +177,7 @@ const Shops = ({ isOpen }) => {
 							setSelectedShops([]);
 						}}
 					/>
-					<AddButton navigateTo={"/shopform"} />
+					<AddButton onClick={handleAddClick} />
 				</Box>
 			</Box>
 
@@ -208,8 +225,15 @@ const Shops = ({ isOpen }) => {
 				onSuccess={handleSaveChanges}
 				originalData={editingRow}
 			/>
-
-
+			<AddModal
+				open={openAddModal}
+				editedData={editedData}  
+				onFieldChange={handleFieldChange}  
+				onClose={handleCloseAddModal} 
+				apiUrl="https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/shops/" 
+				onSuccess={handleAddSuccess}  
+				columns={columns} 
+			/>
 		</Box>
 	);
 };

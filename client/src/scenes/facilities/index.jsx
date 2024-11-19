@@ -10,6 +10,7 @@ import axios from "axios"; //install if have !! needed for API requests
 import DeleteButton from "../../components/DeleteButton";
 import EditButton from "../../components/EditButton";
 import EditModal from "../../components/EditModal";
+import AddModal from "../../components/AddModal";
 
 //facility_id, facility_name, facility_type, location_id, status
 const Facilities = ({ isOpen }) => {
@@ -22,6 +23,8 @@ const Facilities = ({ isOpen }) => {
 	const [editingRow, setEditingRow] = useState(null);	
 	const [openModal, setOpenModal] = useState(false);
 	const [editedData, setEditedData] = useState({});
+	const [openAddModal, setOpenAddModal] = useState(false); 
+
 
 
 	useEffect(() => {
@@ -85,19 +88,33 @@ const Facilities = ({ isOpen }) => {
 		setEditedData({});
 	  };
 	
+	  const handleAddClick = () => {
+		setEditedData({}); // Initialize with empty data for new row
+		setOpenAddModal(true);  // Open the Add Modal
+	  };
+	
+	
+	  const handleAddSuccess = (newRow) => {
+		setFacilitiesData((prevData) => [...prevData, newRow]);  // Add the new row to the data
+	  };
+	
+	  const handleCloseAddModal = () => {
+		setOpenAddModal(false);
+	  };
+	
 
 
 	const columns = [
-		{ field: "facility_id", headerName: "Facility ID", flex: 1 },
+		{ field: "facility_id", headerName: "Facility ID", flex: 1 , editable: true,},
 		{
 			field: "facility_name",
 			headerName: "Facility Name",
 			flex: 1,
-			cellClassName: "name-column--cell",
+			cellClassName: "name-column--cell", editable: true,
 		},
-		{ field: "facility_type", headerName: "Facility Type", flex: 1 },
-		{ field: "location_id", headerName: "Location ID", flex: 1 },
-		{ field: "status", headerName: "Status", flex: 1 },
+		{ field: "facility_type", headerName: "Facility Type", flex: 1 , editable: true,},
+		{ field: "location_id", headerName: "Location ID", flex: 1 , editable: true,},
+		{ field: "status", headerName: "Status", flex: 1 , editable: true,},
 		{
 			field: "actions",
 			headerName: "Actions",
@@ -149,8 +166,8 @@ const Facilities = ({ isOpen }) => {
 							setSelectedRow([]);
 						}}
 					/>
-					<AddButton navigateTo={"/facilitiesform"} />
-			</Box>
+					<AddButton onClick={handleAddClick} />
+					</Box>
 			</Box>
 
 
@@ -201,7 +218,15 @@ const Facilities = ({ isOpen }) => {
 				onSuccess={handleSaveChanges}
 				originalData={editingRow}
 			/>
-
+			<AddModal
+				open={openAddModal}
+				editedData={editedData}  
+				onFieldChange={handleFieldChange}  
+				onClose={handleCloseAddModal} 
+				apiUrl="https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/park-factilities/" 
+				onSuccess={handleAddSuccess}  
+				columns={columns} 
+			/>
 
 		</Box>
 	);

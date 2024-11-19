@@ -15,6 +15,8 @@ import PrintButton from "../../components/PrintButton";
 import AddButton from "../../components/AddButton";
 import EditButton from "../../components/EditButton";
 import EditModal from "../../components/EditModal";
+import AddModal from "../../components/AddModal";
+
 
 const Vendors = ({ isOpen }) => {
 	const theme = useTheme();
@@ -26,6 +28,8 @@ const Vendors = ({ isOpen }) => {
 	const [editingRow, setEditingRow] = useState(null);
 	const [openModal, setOpenModal] = useState(false);
 	const [editedData, setEditedData] = useState({});
+	const [openAddModal, setOpenAddModal] = useState(false); 
+
 
 	useEffect(() => {
 		const fetchVendorData = async () => {
@@ -86,29 +90,44 @@ const Vendors = ({ isOpen }) => {
   };
 
 
+  const handleAddClick = () => {
+    setEditedData({}); // Initialize with empty data for new row
+    setOpenAddModal(true);  // Open the Add Modal
+  };
+
+
+  const handleAddSuccess = (newRow) => {
+    setVendorData((prevData) => [...prevData, newRow]);  // Add the new row to the data
+  };
+
+  const handleCloseAddModal = () => {
+    setOpenAddModal(false);
+  };
+
+
 	const columns = [
 		{
 			field: "vendor_id",
-			headerName: "SKU",
+			headerName: "Vendor ID",
 			headerAlign: "center",
 			align: "center",
-			flex: 0.2,
+			flex: 0.2, editable: true,
 		},
 		{
 			field: "company_name",
-			headerName: "Item Name",
+			headerName: "Company",
 			headerAlign: "center",
 			align: "center",
-			flex: 0.8,
+			flex: 0.8, editable: true,
 		},
-		{ field: "vendor_contact", headerName: "Vendor Contact", flex: 0.5 },
+		{ field: "vendor_contact", headerName: "Vendor Contact", flex: 0.5, editable: true, },
 		{
 			field: "phone_number",
 			headerName: "Phone Number",
 			type: "number",
 			headerAlign: "left",
 			align: "left",
-			flex: 0.2,
+			flex: 0.2, editable: true,
 		},
 		{
 			field: "email",
@@ -116,43 +135,44 @@ const Vendors = ({ isOpen }) => {
 			type: "number",
 			headerAlign: "left",
 			align: "left",
-			flex: 0.2,
+			flex: 0.2, editable: true,
 		},
-		{ field: "address_line1", headerName: "Address Line 1", flex: 0.3 },
-		{ field: "address_line2", headerName: "Address Line 2", flex: 0.2 },
+		{ field: "address_line1", headerName: "Address Line 1", flex: 0.3, editable: true, },
+		{ field: "address_line2", headerName: "Address Line 2", flex: 0.2, editable: true, },
 		{
 			field: "city",
 			headerName: "City",
 			type: "number",
 			headerAlign: "left",
 			align: "left",
-			flex: 0.2,
+			flex: 0.2, editable: true,
 		},
+		{ field: "state", headerName: "State", flex: 0.2, editable: true, },
 		{
 			field: "zip_code",
 			headerName: "Zip Code",
 			type: "number",
 			headerAlign: "left",
 			align: "left",
-			flex: 0.2,
+			flex: 0.2, editable: true,
 		},
-		{ field: "country", headerName: "Country", flex: 0.3 },
-		{ field: "vendor_type", headerName: "Vendor Type", flex: 0.2 },
+		{ field: "country", headerName: "Country", flex: 0.3, editable: true, },
+		{ field: "vendor_type", headerName: "Vendor Type", flex: 0.2, editable: true, },
 		{
 			field: "contract_start_date",
 			headerName: "Contract Start",
 			headerAlign: "left",
 			align: "left",
-			flex: 0.2,
+			flex: 0.2, editable: true,
 		},
 		{
 			field: "contract_end_date",
 			headerName: "Contract End",
 			headerAlign: "left",
 			align: "left",
-			flex: 0.2,
+			flex: 0.2, editable: true,
 		},
-		{ field: "state", headerName: "State", flex: 0.2 },
+		{ field: "state", headerName: "State", flex: 0.2, editable: true, },
 		{
 			field: "actions",
 			headerName: "Actions",
@@ -187,8 +207,8 @@ const Vendors = ({ isOpen }) => {
 						fileName="vendors_report.csv"
 						columns={columns}
 					/>
-					<AddButton navigateTo="/vendorform" />
-				</Box>
+					<AddButton onClick={handleAddClick} />
+					</Box>
 			</Box>
 
 			<Box
@@ -231,6 +251,16 @@ const Vendors = ({ isOpen }) => {
 				apiUrl={`https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/vendors/${editingRow?.vendor_email}`} //TODO: pass correct varible
 				onSuccess={handleSaveChanges}
 				originalData={editingRow}
+			/>
+
+			<AddModal
+				open={openAddModal}
+				editedData={editedData}  
+				onFieldChange={handleFieldChange}  
+				onClose={handleCloseAddModal} 
+				apiUrl="https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/vendors/" 
+				onSuccess={handleAddSuccess}  
+				columns={columns} 
 			/>
 
 		</Box>

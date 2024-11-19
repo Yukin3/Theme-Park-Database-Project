@@ -10,6 +10,7 @@ import PrintButton from "../../components/PrintButton";
 import DeleteButton from "../../components/DeleteButton";
 import EditModal from "../../components/EditModal";
 import EditButton from "../../components/EditButton";
+import AddModal from "../../components/AddModal";
 
 const Maintenance = ({ isOpen }) => {
   const theme = useTheme();
@@ -22,6 +23,8 @@ const Maintenance = ({ isOpen }) => {
   const [loading, setLoading] = useState(true); 
   const [openModal, setOpenModal] = useState(false);
   const [editedData, setEditedData] = useState({});
+  const [openAddModal, setOpenAddModal] = useState(false); 
+
 
   useEffect(() => {
     const fetchworkOrderInfo = async () => {
@@ -77,32 +80,48 @@ const Maintenance = ({ isOpen }) => {
     setEditedData({});
   };
 
+
+  const handleAddClick = () => {
+    setEditedData({}); // Initialize with empty data for new row
+    setOpenAddModal(true);  // Open the Add Modal
+  };
+
+
+  const handleAddSuccess = (newRow) => {
+    setworkOrderInfo((prevData) => [...prevData, newRow]);  // Add the new row to the data
+  };
+
+  const handleCloseAddModal = () => {
+    setOpenAddModal(false);
+  };
+
+
   const columns = [
-    { field: "woid", headerName: "WorkOrderID", flex: 0.5 },
+    { field: "woid", headerName: "WorkOrderID", flex: 0.5, editable: true, },
     {
       field: "section_id",
       headerName: "Section",
       flex: 1,
-      cellClassName: "name-column--cell",
+      cellClassName: "name-column--cell", editable: true,
     },
-    { field: "ride_id", headerName: "Ride ID" },
-    { field: "invoice_id", headerName: "Invoice ID", flex: 0.5 },
-    { field: "maintenance_date", headerName: "Date of Service", flex: 1 },
+    { field: "ride_id", headerName: "Ride ID", editable: true, },
+    { field: "invoice_id", headerName: "Invoice ID", flex: 0.5 , editable: true,},
+    { field: "maintenance_date", headerName: "Date of Service", flex: 1 , editable: true,},
     {
       field: "maintenance_type",
       headerName: "Maintenance Type",
-      flex: 0.5,
+      flex: 0.5, editable: true,
     },
     {
       field: "assigned_worker_id",
       headerName: "Assigned Worker(ID)",
-      flex: 0.5,
+      flex: 0.5, editable: true,
     },
-    { field: "date_created", headerName: "Date Created", flex: 0.5 },
-    { field: "updated_at", headerName: "Date Updated", flex: 0.5 },
-    { field: "created_by", headerName: "Created By", flex: 0.5 },
-    { field: "updated_by", headerName: "Updated By", flex: 0.5 },
-    { field: "status", headerName: "Status", flex: 0.5 },
+    { field: "date_created", headerName: "Date Created", flex: 0.5, editable: true, },
+    { field: "updated_at", headerName: "Date Updated", flex: 0.5 , editable: true,},
+    { field: "created_by", headerName: "Created By", flex: 0.5, editable: true, },
+    { field: "updated_by", headerName: "Updated By", flex: 0.5, editable: true, },
+    { field: "status", headerName: "Status", flex: 0.5 , editable: true,},
     {
       field: "actions",
       headerName: "Actions",
@@ -145,8 +164,8 @@ const Maintenance = ({ isOpen }) => {
               setSelectedRow([]);
             }}
           />
-          <AddButton navigateTo="/maintenanceform" />
-        </Box>
+					<AddButton onClick={handleAddClick} />
+          </Box>
       </Box>
       <Box
         m="40px 0 0 0"
@@ -189,6 +208,16 @@ const Maintenance = ({ isOpen }) => {
         onSuccess={handleSaveChanges}
         originalData={editingRow}
       />
+
+      <AddModal
+				open={openAddModal}
+				editedData={editedData}  
+				onFieldChange={handleFieldChange}  
+				onClose={handleCloseAddModal} 
+				apiUrl="https://theme-park-backend.ambitioussea-02dd25ab.eastus.azurecontainerapps.io/api/v1/work-orders/" 
+				onSuccess={handleAddSuccess}  
+				columns={columns} 
+			/>  
     </Box>
   );
 };
